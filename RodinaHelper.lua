@@ -141,6 +141,7 @@ local ini = inicfg.load(inicfg.load({
     }
 }, directIni))
 inicfg.save(ini, directIni)
+
 local ui_meta = {
     __index = function(self, v)
         if v == "switch" then
@@ -232,6 +233,7 @@ local ui_meta = {
         end
     end
 }
+
 local imguitable = {
     renderWindow = { state = false, duration = 0.3 },
     infoBarWindow = { state = false, duration = 0.3 },
@@ -332,6 +334,7 @@ local imguitable = {
     epiarfb = imgui.new.char[128](ini.autopiar.efb),
     epiarfam = imgui.new.char[128](ini.autopiar.efam),
 }
+
 local inputhotkeyname = imgui.new.char[64]()
 local inputhotkeywait = imgui.new.int()
 local inputhotkeytext = imgui.new.char[256]()
@@ -341,9 +344,11 @@ local btypes = {
     'Chat',
     'CEF',
 }
+
 setmetatable(imguitable.renderWindow, ui_meta)
 setmetatable(imguitable.infoBarWindow, ui_meta)
 setmetatable(imguitable.updateWindow, ui_meta)
+
 local bot = nil
 if ini.main.tgbottoken:len()>0 then
     bot = Telegram(ini.main.tgbottoken)
@@ -355,9 +360,11 @@ if bot ~= nil then
         msg('[Telegram Notifications] Бот успешно запустился! Имя: '..data.first_name)
     end)
 end
+
 local changeinfobarpos = false
 local hidemenu = false
 local kkkk = nil
+
 local binds = {
     armour = {
         name = 'armour',
@@ -523,6 +530,7 @@ local updates = {
     changes = nil
 }
 local chatcalcresult, ok, number = nil, nil, nil
+
 imgui.OnInitialize(function()
     imgui.DarkTheme()
     imgui.GetIO().IniFilename = nil
@@ -542,13 +550,14 @@ imgui.OnInitialize(function()
     ctabthree = imgui.new.float[4](color3.x,color3.y,color3.z,color3.w)
     ctabfour = imgui.new.float[4](color4.x,color4.y,color4.z,color4.w)
 end)
+
 function main()
     while not isSampAvailable() do wait(0) end
     if ini.main.infobar then
         imguitable.infoBarWindow.tr()
     end
     if not doesDirectoryExist(getWorkingDirectory()..'\\RodinaHelper') then createDirectory(getWorkingDirectory()..'\\RodinaHelper') end
-    if not doesFileExist(getWorkingDirectory()..'\\RodinaHelper\\binds.txt') then local cfile; cfile = io.open(getWorkingDirectory()..'\\RodinaHelper\\binds.txt', 'w'); cfile:write(''); cfile:close() end
+    if not doesFileExist(getWorkingDirectory()..'\\RodinaHelper\\binds.txt') then local cfile = io.open(getWorkingDirectory()..'\\RodinaHelper\\binds.txt', 'w'); cfile:write(''); cfile:close() end
     LoadBinds()
     sampRegisterChatCommand('rhelp', imguitable.renderWindow.switch)
     sampRegisterChatCommand('upd', imguitable.updateWindow.switch)
@@ -1787,7 +1796,6 @@ imgui.OnFrame(
         end
     end
 )
-
 imgui.OnFrame(
     function() return imguitable.updateWindow.alpha>0.00 end,
     function(self)
@@ -1826,74 +1834,7 @@ imgui.OnFrame(
         end
     end
 )
-function dialogstyle(code)
-    local bs = raknetNewBitStream()
-    raknetBitStreamWriteInt8(bs, 53)
-    raknetBitStreamWriteInt32(bs, code)
-    raknetBitStreamWriteInt32(bs, string.len(''))
-    raknetBitStreamWriteString(bs, '')
-    raknetEmulPacketReceiveBitStream(220, bs)
-    raknetDeleteBitStream(bs)
-end
-function onReceivePacket(id, bs)
-    if id == 220 then
-        raknetBitStreamReadInt8(bs);
-        if raknetBitStreamReadInt8(bs) == 17 then
-            raknetBitStreamReadInt32(bs);
-            local len, text = raknetBitStreamReadInt32(bs), '';
-            if len > 0 then
-                text = raknetBitStreamReadString(bs, len)
-                if text:find('vue%.call%(`(.+)`,(.+)%);') then
-                    local event, data = text:match('vue%.call%(`(.+)`,(.+)%);');
-                    if event == 'progressBar/updateData' and imguitable.aclick[0] then
-                        cef('@24, pressKey')
-                    end
-                elseif text:find('window%.executeEvent%(\'(.+)\', \'(.+)\'%);') then
-                    local event, data = text:match('window%.executeEvent%(\'(.+)\', \'(.+)\'%);')
-                    if event == 'event.setActiveView' then
-                        local view = data:match('%[(.+)%]')
-                        if view == '"Auth"' and imguitable.alogin[0] then
-                            sendAuth(sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED))), (ffi.string(imguitable.pass)))
-                        end
-                    end
-                end
-            end
-        end
-    elseif id == 33 then
-        if imguitable.tglostconnection[0] then
-            sendTelegramMsg('Потерянно соединение с сервером!')
-        end
-    elseif id == 32 then
-        if imguitable.tgdisconnect[0] then
-            sendTelegramMsg('Сервер закрыл соединение.')
-        end
-    end
-end
-function cef(text)
-    local bs = raknetNewBitStream()
-    raknetBitStreamWriteInt8(bs, 220)
-    raknetBitStreamWriteInt8(bs, 18)
-    raknetBitStreamWriteInt8(bs, string.len(text))
-    raknetBitStreamWriteInt8(bs, 0)
-    raknetBitStreamWriteInt8(bs, 0)
-    raknetBitStreamWriteInt8(bs, 0)
-    raknetBitStreamWriteString(bs, text)
-    raknetBitStreamWriteInt8(bs, 0)
-    raknetBitStreamWriteInt8(bs, 0)
-    raknetBitStreamWriteInt8(bs, 0)
-    raknetSendBitStreamEx(bs, 2, 9, 6)
-    raknetDeleteBitStream(bs)
-end
-function sendAuth(nick, password)
-    local str = string.format("authorization|%s|%s|1", nick, password)
-    local bs = raknetNewBitStream()
-    raknetBitStreamWriteInt8(bs, 220)
-    raknetBitStreamWriteInt8(bs, 18)
-    raknetBitStreamWriteInt32(bs, string.len(str))
-    raknetBitStreamWriteString(bs, str)
-    raknetBitStreamWriteInt32(bs, 1)
-    raknetSendBitStreamEx(bs, 2, 9, 6)
-end
+
 addEventHandler('onWindowMessage', function(msg, wparam, lparam)
     if wparam == 27 then
         if imguitable.renderWindow.state then
@@ -2463,6 +2404,16 @@ function imgui.Hint(str_id, hint_text, color)
     end;
     imgui.SetCursorPos(p_orig);
 end
+function imgui.Link(link, text)
+    text = text or link
+    local tSize = imgui.CalcTextSize(text)
+    local p = imgui.GetCursorScreenPos()
+    local DL = imgui.GetWindowDrawList()
+    local col = { 0xFF606060, 0xFF808080 }
+    if imgui.InvisibleButton("##" .. link, tSize) then os.execute("explorer " .. link) end
+    local color = imgui.IsItemHovered() and col[1] or col[2]
+    DL:AddText(p, color, text)
+end
 function setTabColor(lt, rt, lb, rb)
     local samp_module_base = sampGetBase()
     local tab_ptr = memory.getuint32(samp_module_base + 0x26E970, true)
@@ -2495,47 +2446,6 @@ function onScriptTerminate(s, q)
         end
     end
 end
-function sampev.onSetWeather(weatherId)
-    actual.weather = weatherId
-    if imguitable.cweather[0] then
-        return false
-    end
-end
-function sampev.onSetPlayerTime(hour, minute)
-    actual.time = hour
-    if imguitable.ctime[0] then
-        return false
-    end
-end
-function sampev.onSetWorldTime(hour)
-    actual.time = hour
-    if imguitable.ctime[0] then
-        return false
-    end
-end
-function sampev.onSetInterior(interior)
-	if imguitable.ctime[0] then
-		setWorldTime(imguitable.stime[0])
-	end
-	if imguitable.cweather[0] then
-		setWorldWeather(imguitable.sweather[0])
-	end
-end
-function sampev.onSendEnterVehicle(vehicleId, passenger)
-    if imguitable.cacar[0] and not passenger then
-        lua_thread.create(function()
-            while not isCharInAnyCar(PLAYER_PED) do wait(100) end
-            local result, car = sampGetCarHandleBySampVehicleId(vehicleId)
-            if result then
-                if not isCarEngineOn(car) then wait(50) sampSendChat('/engine') end
-                if getCarDoorLockStatus(car) then wait(250) sampSendChat('/lock') end
-                wait(500)
-                setVirtualKeyDown(74, true)
-	            setVirtualKeyDown(74, false)
-            end
-        end)
-    end
-end
 function setWorldTime(hour)
     local bs = raknetNewBitStream()
     raknetBitStreamWriteInt8(bs, hour)
@@ -2547,16 +2457,6 @@ function setWorldWeather(id)
 	raknetBitStreamWriteInt8(bs, id)
     raknetEmulRpcReceiveBitStream(152, bs)
     raknetDeleteBitStream(bs)
-end
-function imgui.Link(link, text)
-    text = text or link
-    local tSize = imgui.CalcTextSize(text)
-    local p = imgui.GetCursorScreenPos()
-    local DL = imgui.GetWindowDrawList()
-    local col = { 0xFF606060, 0xFF808080 }
-    if imgui.InvisibleButton("##" .. link, tSize) then os.execute("explorer " .. link) end
-    local color = imgui.IsItemHovered() and col[1] or col[2]
-    DL:AddText(p, color, text)
 end
 function textbg()
     local dl = imgui.GetWindowDrawList()
@@ -2652,6 +2552,110 @@ end
 function sendTelegramMsg(text)
     return bot:sendMessage{chat_id = tonumber(ini.main.tgbotchatid), text = (text)}
 end
+function checkupdate()
+    local download = require('moonloader').download_status
+    local jsonfile = getWorkingDirectory()..'\\RodinaHelper\\update.json'
+    local jsonurl = 'https://raw.githubusercontent.com/Willy4ka1337/RodinaHelper/main/version.json'
+    downloadUrlToFile(jsonurl, jsonfile, function(id, status, p1, p2)
+        if status == download.STATUSEX_ENDDOWNLOAD then
+            local file = io.open(jsonfile, 'r')
+            local jsn = file:read('*a')
+            file:close()
+            local result, json = pcall(decodeJson, jsn)
+            if result then
+                if json.version ~= thisScript().version then
+                    updates.ver = json.version
+                    updates.date = json.date
+                    updates.changes = json.changelog
+                    imguitable.updateWindow.tr()
+                else
+                    msg('У вас установленна актуальная версия!')
+                end
+            end
+        end
+    end)
+end
+function downloadUpdate()
+    local download = require('moonloader').download_status
+    local downloadpath = 'https://raw.githubusercontent.com/Willy4ka1337/RodinaHelper/main/RodinaHelper.lua'
+    downloadUrlToFile(downloadpath, thisScript().path, function (id, status, p1, p2)
+        if status == download.STATUSEX_ENDDOWNLOAD then
+            msg('Обновление успешно загруженно!')
+            thisScript():reload()
+        end
+    end)
+end
+function u8d(text)
+   return encoding.UTF8:decode(text)
+end
+function dialogstyle(code)
+    local bs = raknetNewBitStream()
+    raknetBitStreamWriteInt8(bs, 53)
+    raknetBitStreamWriteInt32(bs, code)
+    raknetBitStreamWriteInt32(bs, string.len(''))
+    raknetBitStreamWriteString(bs, '')
+    raknetEmulPacketReceiveBitStream(220, bs)
+    raknetDeleteBitStream(bs)
+end
+function onReceivePacket(id, bs)
+    if id == 220 then
+        raknetBitStreamReadInt8(bs);
+        if raknetBitStreamReadInt8(bs) == 17 then
+            raknetBitStreamReadInt32(bs);
+            local len, text = raknetBitStreamReadInt32(bs), '';
+            if len > 0 then
+                text = raknetBitStreamReadString(bs, len)
+                if text:find('vue%.call%(`(.+)`,(.+)%);') then
+                    local event, data = text:match('vue%.call%(`(.+)`,(.+)%);');
+                    if event == 'progressBar/updateData' and imguitable.aclick[0] then
+                        cef('@24, pressKey')
+                    end
+                elseif text:find('window%.executeEvent%(\'(.+)\', \'(.+)\'%);') then
+                    local event, data = text:match('window%.executeEvent%(\'(.+)\', \'(.+)\'%);')
+                    if event == 'event.setActiveView' then
+                        local view = data:match('%[(.+)%]')
+                        if view == '"Auth"' and imguitable.alogin[0] then
+                            sendAuth(sampGetPlayerNickname(select(2, sampGetPlayerIdByCharHandle(PLAYER_PED))), (ffi.string(imguitable.pass)))
+                        end
+                    end
+                end
+            end
+        end
+    elseif id == 33 then
+        if imguitable.tglostconnection[0] then
+            sendTelegramMsg('Потерянно соединение с сервером!')
+        end
+    elseif id == 32 then
+        if imguitable.tgdisconnect[0] then
+            sendTelegramMsg('Сервер закрыл соединение.')
+        end
+    end
+end
+function cef(text)
+    local bs = raknetNewBitStream()
+    raknetBitStreamWriteInt8(bs, 220)
+    raknetBitStreamWriteInt8(bs, 18)
+    raknetBitStreamWriteInt8(bs, string.len(text))
+    raknetBitStreamWriteInt8(bs, 0)
+    raknetBitStreamWriteInt8(bs, 0)
+    raknetBitStreamWriteInt8(bs, 0)
+    raknetBitStreamWriteString(bs, text)
+    raknetBitStreamWriteInt8(bs, 0)
+    raknetBitStreamWriteInt8(bs, 0)
+    raknetBitStreamWriteInt8(bs, 0)
+    raknetSendBitStreamEx(bs, 2, 9, 6)
+    raknetDeleteBitStream(bs)
+end
+function sendAuth(nick, password)
+    local str = string.format("authorization|%s|%s|1", nick, password)
+    local bs = raknetNewBitStream()
+    raknetBitStreamWriteInt8(bs, 220)
+    raknetBitStreamWriteInt8(bs, 18)
+    raknetBitStreamWriteInt32(bs, string.len(str))
+    raknetBitStreamWriteString(bs, str)
+    raknetBitStreamWriteInt32(bs, 1)
+    raknetSendBitStreamEx(bs, 2, 9, 6)
+end
 function sampev.onSetPlayerPos(position)
     if imguitable.tgsetpos[0] then
         sendTelegramMsg('Сервер изменил позицию персонажа на '..position.x..', '..position.y..', '..position.z)
@@ -2715,46 +2719,51 @@ function sampev.onShowDialog(dialogId, style, title, button1, button2, text)
         end
     end
 end
-function checkupdate()
-    local download = require('moonloader').download_status
-    local jsonfile = getWorkingDirectory()..'\\RodinaHelper\\update.json'
-    local jsonurl = 'https://raw.githubusercontent.com/Willy4ka1337/RodinaHelper/main/version.json'
-    downloadUrlToFile(jsonurl, jsonfile, function(id, status, p1, p2)
-        if status == download.STATUSEX_ENDDOWNLOAD then
-            local file = io.open(jsonfile, 'r')
-            local jsn = file:read('*a')
-            file:close()
-            local result, json = pcall(decodeJson, jsn)
-            if result then
-                if json.version ~= thisScript().version then
-                    updates.ver = json.version
-                    updates.date = json.date
-                    updates.changes = json.changelog
-                    imguitable.updateWindow.tr()
-                else
-                    msg('У вас установленна актуальная версия!')
-                end
-            end
-        end
-    end)
-end
-function downloadUpdate()
-    local download = require('moonloader').download_status
-    local downloadpath = 'https://raw.githubusercontent.com/Willy4ka1337/RodinaHelper/main/RodinaHelper.lua'
-    downloadUrlToFile(downloadpath, thisScript().path, function (id, status, p1, p2)
-        if status == download.STATUSEX_ENDDOWNLOAD then
-            msg('Обновление успешно загруженно!')
-            thisScript():reload()
-        end
-    end)
-end
-function u8d(text)
-   return encoding.UTF8:decode(text)
-end
 function sampev.onServerMessage(color, text)
     if imguitable.cautoprizes[0] then
         if text:find('%[Информация%] %{......%}Вам была выдана Ежедневная награда за ваш онлайн%. Используйте /dw_prizes') then
             sampSendChat('/dw_prizes')
         end
+    end
+end
+function sampev.onSetWeather(weatherId)
+    actual.weather = weatherId
+    if imguitable.cweather[0] then
+        return false
+    end
+end
+function sampev.onSetPlayerTime(hour, minute)
+    actual.time = hour
+    if imguitable.ctime[0] then
+        return false
+    end
+end
+function sampev.onSetWorldTime(hour)
+    actual.time = hour
+    if imguitable.ctime[0] then
+        return false
+    end
+end
+function sampev.onSetInterior(interior)
+	if imguitable.ctime[0] then
+		setWorldTime(imguitable.stime[0])
+	end
+	if imguitable.cweather[0] then
+		setWorldWeather(imguitable.sweather[0])
+	end
+end
+function sampev.onSendEnterVehicle(vehicleId, passenger)
+    if imguitable.cacar[0] and not passenger then
+        lua_thread.create(function()
+            while not isCharInAnyCar(PLAYER_PED) do wait(100) end
+            local result, car = sampGetCarHandleBySampVehicleId(vehicleId)
+            if result then
+                if not isCarEngineOn(car) then wait(50) sampSendChat('/engine') end
+                if getCarDoorLockStatus(car) then wait(250) sampSendChat('/lock') end
+                wait(500)
+                setVirtualKeyDown(74, true)
+	            setVirtualKeyDown(74, false)
+            end
+        end)
     end
 end
