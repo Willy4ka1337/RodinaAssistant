@@ -2,7 +2,7 @@
 
 script_name('RodinaHelper')
 script_author('Willy4ka')
-script_version('1.1')
+script_version('1.0')
 script_description('Helper for Rodina Role Play')
 
 local imgui                 = require('mimgui')
@@ -145,7 +145,7 @@ local ui_meta = {
         if v == "switch" then
             local switch = function()
                 if self.process and self.process:status() ~= "dead" then
-                    return false -- // Ïðåäûäóùàÿ àíèìàöèÿ åù¸ íå çàâåðøèëàñü!
+                    return false -- // Предыдущая анимация ещё не завершилась!
                 end
                 self.timer = os.clock()
                 self.state = not self.state
@@ -166,14 +166,14 @@ local ui_meta = {
                         if a == 1.00 then break end
                     end
                 end)
-                return true -- // Ñîñòîÿíèå îêíà èçìåíåíî!
+                return true -- // Состояние окна изменено!
             end
             return switch
         end
         if v == 'tr' then
             local switch = function()
                 if self.process and self.process:status() ~= "dead" then
-                    return false -- // Ïðåäûäóùàÿ àíèìàöèÿ åù¸ íå çàâåðøèëàñü!
+                    return false -- // Предыдущая анимация ещё не завершилась!
                 end
                 self.timer = os.clock()
                 self.state = true
@@ -194,14 +194,14 @@ local ui_meta = {
                         if a == 1.00 then break end
                     end
                 end)
-                return true -- // Ñîñòîÿíèå îêíà èçìåíåíî!
+                return true -- // Состояние окна изменено!
             end
             return switch
         end
         if v == 'fl' then
             local switch = function()
                 if self.process and self.process:status() ~= "dead" then
-                    return false -- // Ïðåäûäóùàÿ àíèìàöèÿ åù¸ íå çàâåðøèëàñü!
+                    return false -- // Предыдущая анимация ещё не завершилась!
                 end
                 self.timer = os.clock()
                 self.state = false
@@ -222,7 +222,7 @@ local ui_meta = {
                         if a == 1.00 then break end
                     end
                 end)
-                return true -- // Ñîñòîÿíèå îêíà èçìåíåíî!
+                return true -- // Состояние окна изменено!
             end
             return switch
         end
@@ -351,7 +351,7 @@ end
 if bot ~= nil then
     bot:on('ready', function(data)
         while not isSampAvailable() do wait(100) end
-        msg('[Telegram Notifications] Áîò óñïåøíî çàïóñòèëñÿ! Èìÿ: '..data.first_name)
+        msg('[Telegram Notifications] Бот успешно запустился! Имя: '..data.first_name)
     end)
 end
 local changeinfobarpos = false
@@ -502,14 +502,14 @@ local list = {
         'QUESTION',
     },
     name = {
-        u8'Ïåðñîíàæ',
-        u8'Òðàíñïîðò',
-        u8'Áèíäåð',
-        u8'Ïðî÷åå',
-        u8'Óâåäîìëåíèÿ',
-        u8'Êàñòîìèçàöèÿ',
-        u8'Íàñòðîéêè',
-        u8'Èíôîðìàöèÿ',
+        u8'Персонаж',
+        u8'Транспорт',
+        u8'Биндер',
+        u8'Прочее',
+        u8'Уведомления',
+        u8'Кастомизация',
+        u8'Настройки',
+        u8'Информация',
     },
 }
 local tabs = {
@@ -558,7 +558,7 @@ function main()
         dialogstyle(imguitable.ditype[0])
     end
     checkupdate()
-    msg('Ñêðèïò óñïåøíî çàãðóæåí!')
+    msg('Скрипт успешно загружен!')
     while true do
         wait(0)
         if imguitable.cfov[0] then
@@ -591,25 +591,25 @@ function main()
             local text = sampGetChatInputText()
             if text:find('%d+') and text:find('[-+/*^%%]') and not text:find('%a+') and text ~= nil then
                 ok, number = pcall(load('return '..text))
-                chatcalcresult = 'Ðåçóëüòàò: '..number
+                chatcalcresult = 'Результат: '..number
             end
             if text:find('%d+%%%*%d+') then
                 local number1, number2 = text:match('(%d+)%%%*(%d+)')
                 number = number1*number2/100
                 ok, number = pcall(load('return '..number))
-                chatcalcresult = 'Ðåçóëüòàò: '..number
+                chatcalcresult = 'Результат: '..number
             end
             if text:find('%d+%%%/%d+') then
                 local number1, number2 = text:match('(%d+)%%%/(%d+)')
                 number = number2/number1*100
                 ok, number = pcall(load('return '..number))
-                chatcalcresult = 'Ðåçóëüòàò: '..number
+                chatcalcresult = 'Результат: '..number
             end
             if text:find('%d+/%d+%%') then
                 local number1, number2 = text:match('(%d+)/(%d+)%%')
                 number = number1*100/number2
                 ok, number = pcall(load('return '..number))
-                chatcalcresult = 'Ðåçóëüòàò: '..number..'%'
+                chatcalcresult = 'Результат: '..number..'%'
             end
             if text == '' then
                 ok = false
@@ -719,9 +719,9 @@ imgui.OnFrame(
             imgui.SameLine()
             imgui.BeginChild('##Functions', imgui.ImVec2(485, -1), true, imgui.WindowFlags.NoScrollbar)
                 textbg()
-                if tabs.maintab == 1 then -- ÏÅÐÑÎÍÀÆ
+                if tabs.maintab == 1 then -- ПЕРСОНАЖ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Ïåðñîíàæ')
+                    imgui.CenterText(u8'Персонаж')
                     imgui.Separator()
                     imgui.BeginChild('##PLeft', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
                     imgui.SetCursorPosX(10)
@@ -732,7 +732,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keyarmour = hotkey.KeyEditor('armour', u8'Áðîíåæèëåò', imgui.ImVec2(185, 24))
+                    local keyarmour = hotkey.KeyEditor('armour', u8'Бронежилет', imgui.ImVec2(185, 24))
                     if keyarmour then
                         ini.bind.armour = encodeJson(keyarmour)
                         inicfg.save(ini, directIni)
@@ -746,7 +746,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keyheal = hotkey.KeyEditor('heal', u8'Àïòå÷êà', imgui.ImVec2(185, 24))
+                    local keyheal = hotkey.KeyEditor('heal', u8'Аптечка', imgui.ImVec2(185, 24))
                     if keyheal then
                         ini.bind.heal = encodeJson(keyheal)
                         inicfg.save(ini, directIni)
@@ -759,7 +759,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keymask = hotkey.KeyEditor('mask', u8'Ìàñêà', imgui.ImVec2(185, 24))
+                    local keymask = hotkey.KeyEditor('mask', u8'Маска', imgui.ImVec2(185, 24))
                     if keymask then
                         ini.bind.mask = encodeJson(keymask)
                         inicfg.save(ini, directIni)
@@ -772,7 +772,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keydrugs1 = hotkey.KeyEditor('drugs1', u8'Íàðêîòèêè (1 øò)', imgui.ImVec2(185, 24))
+                    local keydrugs1 = hotkey.KeyEditor('drugs1', u8'Наркотики (1 шт)', imgui.ImVec2(185, 24))
                     if keydrugs1 then
                         ini.bind.drugs1 = encodeJson(keydrugs1)
                         inicfg.save(ini, directIni)
@@ -786,7 +786,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keydrugs2 = hotkey.KeyEditor('drugs2', u8'Íàðêîòèêè (2 øò)', imgui.ImVec2(185, 24))
+                    local keydrugs2 = hotkey.KeyEditor('drugs2', u8'Наркотики (2 шт)', imgui.ImVec2(185, 24))
                     if keydrugs2 then
                         ini.bind.drugs2 = encodeJson(keydrugs2)
                         inicfg.save(ini, directIni)
@@ -800,7 +800,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keydrugs3 = hotkey.KeyEditor('drugs3', u8'Íàðêîòèêè (3 øò)', imgui.ImVec2(185, 24))
+                    local keydrugs3 = hotkey.KeyEditor('drugs3', u8'Наркотики (3 шт)', imgui.ImVec2(185, 24))
                     if keydrugs3 then
                         ini.bind.drugs3 = encodeJson(keydrugs3)
                         inicfg.save(ini, directIni)
@@ -810,14 +810,14 @@ imgui.OnFrame(
                     imgui.BeginChild('##PRight', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8('Áåñêîíå÷íûé áåã'), imguitable.cinfiniterun) then
+                    if imgui.CustomCheckbox(u8('Бесконечный бег'), imguitable.cinfiniterun) then
                         ini.main.infiniterun = imguitable.cinfiniterun[0]
                         inicfg.save(ini, directIni)
                     end
                     imgui.EndChild()
-                elseif tabs.maintab == 2 then -- ÒÐÀÍÑÏÎÐÒ
+                elseif tabs.maintab == 2 then -- ТРАНСПОРТ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Òðàíñïîðò')
+                    imgui.CenterText(u8'Транспорт')
                     imgui.Separator()
                     imgui.BeginChild('##CLeft', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
                     imgui.SetCursorPosX(10)
@@ -828,7 +828,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keylock = hotkey.KeyEditor('lock', u8'Çàêðûòèå òðàíñïîðòà', imgui.ImVec2(185, 24))
+                    local keylock = hotkey.KeyEditor('lock', u8'Закрытие транспорта', imgui.ImVec2(185, 24))
                     if keylock then
                         ini.bind.lock = encodeJson(keylock)
                         inicfg.save(ini, directIni)
@@ -841,7 +841,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keyrep = hotkey.KeyEditor('repcar', u8'Ïî÷èíêà òðàñíñïîðòà', imgui.ImVec2(185, 24))
+                    local keyrep = hotkey.KeyEditor('repcar', u8'Починка траснспорта', imgui.ImVec2(185, 24))
                     if keyrep then
                         ini.bind.repcar = encodeJson(keyrep)
                         inicfg.save(ini, directIni)
@@ -854,7 +854,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keyfill = hotkey.KeyEditor('fillcar', u8'Çàïðàâêà òðàñíñïîðòà', imgui.ImVec2(185, 24))
+                    local keyfill = hotkey.KeyEditor('fillcar', u8'Заправка траснспорта', imgui.ImVec2(185, 24))
                     if keyfill then
                         ini.bind.fillcar = encodeJson(keyfill)
                         inicfg.save(ini, directIni)
@@ -867,7 +867,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keyspawn = hotkey.KeyEditor('spawncar', u8'Ñïàâí òðàñíñïîðòà', imgui.ImVec2(185, 24))
+                    local keyspawn = hotkey.KeyEditor('spawncar', u8'Спавн траснспорта', imgui.ImVec2(185, 24))
                     if keyspawn then
                         ini.bind.spawncar = encodeJson(keyspawn)
                         inicfg.save(ini, directIni)
@@ -880,7 +880,7 @@ imgui.OnFrame(
                     end
                     imgui.SameLine()
                     imgui.SetCursorPosY(imgui.GetCursorPosY()-2)
-                    local keybarrier = hotkey.KeyEditor('barrier', u8'Îòêðûòèå øëàãáàóìà', imgui.ImVec2(185, 24))
+                    local keybarrier = hotkey.KeyEditor('barrier', u8'Открытие шлагбаума', imgui.ImVec2(185, 24))
                     if keybarrier then
                         ini.bind.barrier = encodeJson(keybarrier)
                         inicfg.save(ini, directIni)
@@ -894,43 +894,43 @@ imgui.OnFrame(
                         ini.main.autocar = imguitable.cacar[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('hcar', u8'Ïðè ïîñàäêå â òðàíñïîðò àâòîìàòè÷åñêè\nçàêðûâàåò äâåðè, çàâîäèò äâèãàòåëü è ïðèñòåãèâàåòñÿ')
+                    imgui.Hint('hcar', u8'При посадке в транспорт автоматически\nзакрывает двери, заводит двигатель и пристегивается')
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                     if imgui.CustomCheckbox('Moto/Bike Flood', imguitable.cautobike) then
                         ini.main.autobike = imguitable.cautobike[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('mbflood', u8'Íà âåëîñèïåäå/ìîòîöèêëå ïðè çàæàòèè SHIFT\náóäåò ðàçâèâàòüñÿ ìàêñèìàëüíàÿ ñêîðîñòü')
+                    imgui.Hint('mbflood', u8'На велосипеде/мотоцикле при зажатии SHIFT\nбудет развиваться максимальная скорость')
                     imgui.EndChild()
-                elseif tabs.maintab == 3 then --ÁÈÍÄÅÐ
-                    -- ÁËßÒÜ, ÍÅ ÑÌÎÒÐÈ ÑÞÄÀ ÑÞÄÀ ÏÎÆÀËÓÉÑÒÀ, ß ÑÀÌ ÍÅ ÅÁÓ ×Å ÇÀ ÕÓÉÍÞ ß ÒÓÒ ÂÛÑÐÀË
+                elseif tabs.maintab == 3 then --БИНДЕР
+                    -- БЛЯТЬ, НЕ СМОТРИ СЮДА СЮДА ПОЖАЛУЙСТА, Я САМ НЕ ЕБУ ЧЕ ЗА ХУЙНЮ Я ТУТ ВЫСРАЛ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Áèíäåð')
+                    imgui.CenterText(u8'Биндер')
                     imgui.Separator()
-                    if imgui.Button(u8'Ñîçäàòü áèíä', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
+                    if imgui.Button(u8'Создать бинд', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
                         hotkey.RegisterCallback('createbind', decodeJson('[]'), function() end)
-                        imgui.OpenPopup(u8'Ñîçäàíèå áèíäà')
+                        imgui.OpenPopup(u8'Создание бинда')
                     end
-                    if imgui.BeginPopupModal(u8'Ñîçäàíèå áèíäà', _, imgui.WindowFlags.NoResize) then
+                    if imgui.BeginPopupModal(u8'Создание бинда', _, imgui.WindowFlags.NoResize) then
                         if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), 20) end
                         imgui.SetWindowSizeVec2(imgui.ImVec2(350, -1))
-                        imgui.CenterText(u8'ÍÀÇÂÀÍÈÅ ÁÈÍÄÀ ÍÅ ÄÎËÆÍÎ ÏÎÂÒÎÐßÒÜÑß')
-                        imgui.CenterText(u8'È ÍÅ ÈÌÅÒÜ ÐÓÑÑÊÈÕ ÁÓÊÂ')
+                        imgui.CenterText(u8'НАЗВАНИЕ БИНДА НЕ ДОЛЖНО ПОВТОРЯТЬСЯ')
+                        imgui.CenterText(u8'И НЕ ИМЕТЬ РУССКИХ БУКВ')
                         imgui.PushItemWidth(-1)
-                        imgui.InputTextWithHint('##Bind name', u8'Ââåäèòå íàçâàíèå áèíäà', inputhotkeyname, ffi.sizeof(inputhotkeyname))
-                        if not getItemByName(u8:decode(ffi.string(inputhotkeyname))) then imgui.Hint('bindname', u8'ÎØÈÁÊÀ! ÁÈÍÄ Ñ ÝÒÈÌ ÍÀÇÂÀÍÈÅÌ ÓÆÅ ÑÓÙÅÑÒÂÓÅÒ!') end
-                        local cbind = hotkey.KeyEditor('createbind', u8'Êëàâèøà', imgui.ImVec2(-1, 24))
+                        imgui.InputTextWithHint('##Bind name', u8'Введите название бинда', inputhotkeyname, ffi.sizeof(inputhotkeyname))
+                        if not getItemByName(u8:decode(ffi.string(inputhotkeyname))) then imgui.Hint('bindname', u8'ОШИБКА! БИНД С ЭТИМ НАЗВАНИЕМ УЖЕ СУЩЕСТВУЕТ!') end
+                        local cbind = hotkey.KeyEditor('createbind', u8'Клавиша', imgui.ImVec2(-1, 24))
                         if encodeJson(cbind) ~= 'null' then
                             kkkk = encodeJson(cbind)
                         end
-                        imgui.ItemSelector(u8'Òèï îòïðàâêè', btypes, bindsendtype)
+                        imgui.ItemSelector(u8'Тип отправки', btypes, bindsendtype)
                         if bindsendtype[0] == 1 then
-                            imgui.CenterText(u8'Çàäåðæêà')
+                            imgui.CenterText(u8'Задержка')
                             imgui.InputInt('##wait', inputhotkeywait, 100)
                             imgui.InputTextMultiline('##inputbind',inputhotkeytext,ffi.sizeof(inputhotkeytext))
-                            if ffi.string(inputhotkeyname):len() > 0 and not u8:decode(ffi.string(inputhotkeyname)):find('[À-ßà-ÿ]') and getItemByName(u8:decode(ffi.string(inputhotkeyname))) and kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>0 and ffi.string(inputhotkeycef):len() >= 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[À-ßà-ÿ]') then
-                                if imgui.Button(u8'Ñîõðàíèòü', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
+                            if ffi.string(inputhotkeyname):len() > 0 and not u8:decode(ffi.string(inputhotkeyname)):find('[А-Яа-я]') and getItemByName(u8:decode(ffi.string(inputhotkeyname))) and kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>0 and ffi.string(inputhotkeycef):len() >= 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[А-Яа-я]') then
+                                if imgui.Button(u8'Сохранить', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
                                     table.insert(cusbinds, {
                                         [ffi.string(inputhotkeyname)] = {
                                             name = u8:decode(ffi.string(inputhotkeyname)),
@@ -968,9 +968,9 @@ imgui.OnFrame(
                                 end
                             end
                         elseif bindsendtype[0] == 2 then
-                            imgui.InputTextWithHint('##CEFEvent', u8'Ââåäèòå îòïðàâëÿåìûå äàííûå CEF', inputhotkeycef, ffi.sizeof(inputhotkeycef))
-                            if ffi.string(inputhotkeyname):len() > 0 and not u8:decode(ffi.string(inputhotkeyname)):find('[À-ßà-ÿ]') and getItemByName(u8:decode(ffi.string(inputhotkeyname))) and kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>=0 and ffi.string(inputhotkeycef):len() > 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[À-ßà-ÿ]') then
-                                if imgui.Button(u8'Ñîõðàíèòü', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
+                            imgui.InputTextWithHint('##CEFEvent', u8'Введите отправляемые данные CEF', inputhotkeycef, ffi.sizeof(inputhotkeycef))
+                            if ffi.string(inputhotkeyname):len() > 0 and not u8:decode(ffi.string(inputhotkeyname)):find('[А-Яа-я]') and getItemByName(u8:decode(ffi.string(inputhotkeyname))) and kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>=0 and ffi.string(inputhotkeycef):len() > 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[А-Яа-я]') then
+                                if imgui.Button(u8'Сохранить', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
                                     table.insert(cusbinds, {
                                         [ffi.string(inputhotkeyname)] = {
                                             name = u8:decode(ffi.string(inputhotkeyname)),
@@ -1008,7 +1008,7 @@ imgui.OnFrame(
                                 end
                             end
                         end
-                        if imgui.Button(u8'Çàêðûòü', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
+                        if imgui.Button(u8'Закрыть', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
                             kkkk = '[]'
                             imgui.CloseCurrentPopup()
                         end
@@ -1021,12 +1021,12 @@ imgui.OnFrame(
                                 hotkey.RegisterCallback(value.name, decodeJson('[]'), function() end)
                                 SaveBind()
                             end
-                            imgui.Hint('deletebind', u8'Óäàëèòü')
+                            imgui.Hint('deletebind', u8'Удалить')
                             imgui.SameLine()
                             imgui.Button(u8(value.name), imgui.ImVec2(imgui.GetWindowSize().x-120, 25))
                             imgui.SameLine()
                             if imgui.Button(faicons("PENCIL").."##"..u8(value.name), imgui.ImVec2(50, 25)) then
-                                imgui.OpenPopup(u8'Ðåäàêòèðîâàíèå áèíäà')
+                                imgui.OpenPopup(u8'Редактирование бинда')
                                 hotkey.RegisterCallback('editbind', decodeJson(value.keys), function() end)
                                 inputhotkeyname = imgui.new.char[64](u8(value.name))
                                 inputhotkeytext = imgui.new.char[64](u8(value.text))
@@ -1034,24 +1034,24 @@ imgui.OnFrame(
                                 bindsendtype = imgui.new.int(value.sendtype)
                                 inputhotkeycef = imgui.new.char[265](value.sendcef)
                             end
-                            imgui.Hint('edbind', u8'Èçìåíèòü')
+                            imgui.Hint('edbind', u8'Изменить')
                         end
                     end
-                    if imgui.BeginPopupModal(u8'Ðåäàêòèðîâàíèå áèíäà', _, imgui.WindowFlags.NoResize) then
+                    if imgui.BeginPopupModal(u8'Редактирование бинда', _, imgui.WindowFlags.NoResize) then
                         if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), 20) end
                         imgui.SetWindowSizeVec2(imgui.ImVec2(350, -1))
                         imgui.PushItemWidth(-1)
-                        local cbind = hotkey.KeyEditor('editbind', u8'Êëàâèøà', imgui.ImVec2(-1, 24))
+                        local cbind = hotkey.KeyEditor('editbind', u8'Клавиша', imgui.ImVec2(-1, 24))
                         if encodeJson(cbind) ~= 'null' then
                             kkkk = encodeJson(cbind)
                         end
-                        imgui.ItemSelector(u8'Òèï îòïðàâêè', btypes, bindsendtype)
+                        imgui.ItemSelector(u8'Тип отправки', btypes, bindsendtype)
                         if bindsendtype[0] == 1 then
-                            imgui.CenterText(u8'Çàäåðæêà')
+                            imgui.CenterText(u8'Задержка')
                             imgui.InputInt('##wait', inputhotkeywait,100)
                             imgui.InputTextMultiline('##inputbind',inputhotkeytext,ffi.sizeof(inputhotkeytext))
-                            if kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>0 and ffi.string(inputhotkeycef):len() >= 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[À-ßà-ÿ]') then
-                                if imgui.Button(u8'Ñîõðàíèòü', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
+                            if kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>0 and ffi.string(inputhotkeycef):len() >= 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[А-Яа-я]') then
+                                if imgui.Button(u8'Сохранить', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
                                     local tblkey = nil
                                     for k, v in pairs(cusbinds) do
                                         for key, value in pairs(v) do
@@ -1098,9 +1098,9 @@ imgui.OnFrame(
                                 end
                             end
                         elseif bindsendtype[0] == 2 then
-                            imgui.InputTextWithHint('##CEFEvent', u8'Ââåäèòå îòïðàâëÿåìûå äàííûå CEF', inputhotkeycef, ffi.sizeof(inputhotkeycef))
-                            if kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>=0 and ffi.string(inputhotkeycef):len() > 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[À-ßà-ÿ]') then
-                                if imgui.Button(u8'Ñîõðàíèòü', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
+                            imgui.InputTextWithHint('##CEFEvent', u8'Введите отправляемые данные CEF', inputhotkeycef, ffi.sizeof(inputhotkeycef))
+                            if kkkk and u8:decode(ffi.string(inputhotkeytext)):len()>=0 and ffi.string(inputhotkeycef):len() > 0 and not u8:decode(ffi.string(inputhotkeycef)):find('[А-Яа-я]') then
+                                if imgui.Button(u8'Сохранить', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
                                     local tblkey = nil
                                     for k, v in pairs(cusbinds) do
                                         for key, value in pairs(v) do
@@ -1147,7 +1147,7 @@ imgui.OnFrame(
                                 end
                             end
                         end
-                        if imgui.Button(u8'Çàêðûòü', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
+                        if imgui.Button(u8'Закрыть', imgui.ImVec2(imgui.GetWindowSize().x-10, 30)) then
                             inputhotkeyname = imgui.new.char[64]()
                             inputhotkeytext = imgui.new.char[64]()
                             inputhotkeywait = imgui.new.int()
@@ -1157,40 +1157,40 @@ imgui.OnFrame(
                         end
                         imgui.End()
                     end
-                elseif tabs.maintab == 4 then --ÏÐÎ×ÅÅ
+                elseif tabs.maintab == 4 then --ПРОЧЕЕ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Ïðî÷åå')
+                    imgui.CenterText(u8'Прочее')
                     imgui.Separator()
                     imgui.BeginChild('##OLeft', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Àâòîëîãèí', imguitable.alogin) then
+                    if imgui.CustomCheckbox(u8'Автологин', imguitable.alogin) then
                         ini.main.autologin = imguitable.alogin[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('autologin', u8'Ïðè çàõîäå íà ñåðâåð ïàðîëü áóäåò ââîäèòüñÿ àâòîìàòè÷åñêè')
+                    imgui.Hint('autologin', u8'При заходе на сервер пароль будет вводиться автоматически')
                     if imguitable.alogin[0] then
-                        if imgui.CustomInput(u8'Ïàðîëü', u8'Ââåäèòå ïàðîëü', imguitable.pass, ffi.sizeof(imguitable.pass), imgui.InputTextFlags.Password, 170) then
+                        if imgui.CustomInput(u8'Пароль', u8'Введите пароль', imguitable.pass, ffi.sizeof(imguitable.pass), imgui.InputTextFlags.Password, 170) then
                             ini.main.password = ffi.string(imguitable.pass)
                             inicfg.save(ini, directIni)
                         end
                     end
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Àâòî-êëèêåð íà ðåñóðñàõ', imguitable.aclick) then
+                    if imgui.CustomCheckbox(u8'Авто-кликер на ресурсах', imguitable.aclick) then
                         ini.main.autoclick = imguitable.aclick[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('autoclicker', u8'Ïðè ñáîðêå ðåñóðñîâ ËÊÌ áóäåò íàæèìàòüñÿ àâòîìàòè÷åñêè')
+                    imgui.Hint('autoclicker', u8'При сборке ресурсов ЛКМ будет нажиматься автоматически')
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Àâòî ïèí-êîä', imguitable.cautopin) then
+                    if imgui.CustomCheckbox(u8'Авто пин-код', imguitable.cautopin) then
                         ini.main.autopin = imguitable.cautopin[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('autopin', u8'Àâòîìàòè÷åñêè ââîäèò ïèí êîä â áàíêå')
+                    imgui.Hint('autopin', u8'Автоматически вводит пин код в банке')
                     if imguitable.cautopin[0] then
-                        if imgui.CustomInput(u8'Êîä', u8'Ââåäèòå êîä', imguitable.pinpass, ffi.sizeof(imguitable.pinpass), imgui.InputTextFlags.Password, 170) then
+                        if imgui.CustomInput(u8'Код', u8'Введите код', imguitable.pinpass, ffi.sizeof(imguitable.pinpass), imgui.InputTextFlags.Password, 170) then
                             ini.main.pinpassword = ffi.string(imguitable.pinpass)
                             inicfg.save(ini, directIni)
                         end
@@ -1204,7 +1204,7 @@ imgui.OnFrame(
                         ini.main.chatcalc = imguitable.cchatcalc[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('chatcalc', u8'Ââåäèòå ïðèìåð â ÷àòå (1+1)')
+                    imgui.Hint('chatcalc', u8'Введите пример в чате (1+1)')
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                     if imgui.CustomCheckbox(u8'Info Bar', imguitable.cinfobar) then
@@ -1225,13 +1225,13 @@ imgui.OnFrame(
                         imgui.SetWindowSizeVec2(imgui.ImVec2(350, -1))
                         textbg()
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                        imgui.CenterText(u8('Íàñòðîéêè'))
+                        imgui.CenterText(u8('Настройки'))
                         imgui.Separator()
-                        if imgui.Button(u8'Èçìåíèòü ïîëîæåíèå',imgui.ImVec2(-1,30)) then
+                        if imgui.Button(u8'Изменить положение',imgui.ImVec2(-1,30)) then
                             changeinfobarpos = true
                             imguitable.renderWindow.switch()
                             imgui.CloseCurrentPopup()
-                            msg('Äëÿ òîãî, ÷òî áû ñîõðàíèòü ïîëîæåíèå íàæìèòå ËÊÌ')
+                            msg('Для того, что бы сохранить положение нажмите ЛКМ')
                         end
                         imgui.BeginChild('##infofarpopup', imgui.ImVec2(-1,230), true)
                         imgui.SetCursorPosX(10)
@@ -1275,7 +1275,7 @@ imgui.OnFrame(
                             inicfg.save(ini, directIni)
                         end
                         imgui.EndChild()
-                        if imgui.Button(u8'Çàêðûòü', imgui.ImVec2(-1, 30)) then
+                        if imgui.Button(u8'Закрыть', imgui.ImVec2(-1, 30)) then
                             imgui.CloseCurrentPopup()
                         end
                         imgui.End()
@@ -1292,7 +1292,7 @@ imgui.OnFrame(
                         imgui.SetWindowSizeVec2(imgui.ImVec2(450, -1))
                         textbg()
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                        imgui.CenterText(u8('Íàñòðîéêè'))
+                        imgui.CenterText(u8('Настройки'))
                         imgui.Separator()
                         imgui.BeginChild('##autopiarpopup', imgui.ImVec2(-1,250),true)
                         imgui.SetCursorPosX(10)
@@ -1303,7 +1303,7 @@ imgui.OnFrame(
                         end
                         imgui.SameLine()
                         imgui.PushItemWidth(255)
-                        if imgui.InputTextWithHint('##chatinput', u8'×àò', imguitable.epiarchat, ffi.sizeof(imguitable.epiarchat)) then
+                        if imgui.InputTextWithHint('##chatinput', u8'Чат', imguitable.epiarchat, ffi.sizeof(imguitable.epiarchat)) then
                             ini.autopiar.echat = ffi.string(imguitable.epiarchat)
                             inicfg.save(ini, directIni)
                         end
@@ -1321,7 +1321,7 @@ imgui.OnFrame(
                         end
                         imgui.SameLine()
                         imgui.PushItemWidth(255)
-                        if imgui.InputTextWithHint('##sinput', u8'Êðèê', imguitable.epiars, ffi.sizeof(imguitable.epiars)) then
+                        if imgui.InputTextWithHint('##sinput', u8'Крик', imguitable.epiars, ffi.sizeof(imguitable.epiars)) then
                             ini.autopiar.es = ffi.string(imguitable.epiars)
                             inicfg.save(ini, directIni)
                         end
@@ -1339,7 +1339,7 @@ imgui.OnFrame(
                         end
                         imgui.SameLine()
                         imgui.PushItemWidth(255)
-                        if imgui.InputTextWithHint('##cinput', u8'Øåïîò', imguitable.epiarc, ffi.sizeof(imguitable.epiarc)) then
+                        if imgui.InputTextWithHint('##cinput', u8'Шепот', imguitable.epiarc, ffi.sizeof(imguitable.epiarc)) then
                             ini.autopiar.ec = ffi.string(imguitable.epiarc)
                             inicfg.save(ini, directIni)
                         end
@@ -1357,7 +1357,7 @@ imgui.OnFrame(
                         end
                         imgui.SameLine()
                         imgui.PushItemWidth(255)
-                        if imgui.InputTextWithHint('##vrinput', u8'Âèï ÷àò', imguitable.epiarvr, ffi.sizeof(imguitable.epiarvr)) then
+                        if imgui.InputTextWithHint('##vrinput', u8'Вип чат', imguitable.epiarvr, ffi.sizeof(imguitable.epiarvr)) then
                             ini.autopiar.evr = ffi.string(imguitable.epiarvr)
                             inicfg.save(ini, directIni)
                         end
@@ -1375,7 +1375,7 @@ imgui.OnFrame(
                         end
                         imgui.SameLine()
                         imgui.PushItemWidth(255)
-                        if imgui.InputTextWithHint('##rbinput', u8'×àò îðãàíèçàöèè', imguitable.epiarrb, ffi.sizeof(imguitable.epiarrb)) then
+                        if imgui.InputTextWithHint('##rbinput', u8'Чат организации', imguitable.epiarrb, ffi.sizeof(imguitable.epiarrb)) then
                             ini.autopiar.erb = ffi.string(imguitable.epiarrb)
                             inicfg.save(ini, directIni)
                         end
@@ -1393,7 +1393,7 @@ imgui.OnFrame(
                         end
                         imgui.SameLine()
                         imgui.PushItemWidth(255)
-                        if imgui.InputTextWithHint('##fbinput', u8'×àò áàíäû', imguitable.epiarfb, ffi.sizeof(imguitable.epiarfb)) then
+                        if imgui.InputTextWithHint('##fbinput', u8'Чат банды', imguitable.epiarfb, ffi.sizeof(imguitable.epiarfb)) then
                             ini.autopiar.efb = ffi.string(imguitable.epiarfb)
                             inicfg.save(ini, directIni)
                         end
@@ -1411,7 +1411,7 @@ imgui.OnFrame(
                         end
                         imgui.SameLine()
                         imgui.PushItemWidth(255)
-                        if imgui.InputTextWithHint('##faminput', u8'×àò ñåìüè', imguitable.epiarfam, ffi.sizeof(imguitable.epiarfam)) then
+                        if imgui.InputTextWithHint('##faminput', u8'Чат семьи', imguitable.epiarfam, ffi.sizeof(imguitable.epiarfam)) then
                             ini.autopiar.efam = ffi.string(imguitable.epiarfam)
                             inicfg.save(ini, directIni)
                         end
@@ -1429,20 +1429,20 @@ imgui.OnFrame(
                         -- wpiarrb = imgui.new.int(ini.autopiar.rbwait),
                         -- wpiarfb = imgui.new.int(ini.autopiar.fbwait),
                         -- wpiarfam = imgui.new.int(ini.autopiar.famwait),
-                        if imgui.Button(u8'Çàêðûòü', imgui.ImVec2(-1, 30)) then
+                        if imgui.Button(u8'Закрыть', imgui.ImVec2(-1, 30)) then
                             imgui.CloseCurrentPopup()
                         end
                         imgui.End()
                     end
                     imgui.EndChild()
-                elseif tabs.maintab == 5 then --ÓÂÅÄÎÌËÅÍÈß
+                elseif tabs.maintab == 5 then --УВЕДОМЛЕНИЯ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Óâåäîìëåíèÿ')
+                    imgui.CenterText(u8'Уведомления')
                     imgui.Separator()
                     imgui.BeginChild('##notify',imgui.ImVec2(200,-1), true)
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Óâåäîìëåíèÿ', imguitable.cnotify) then
+                    if imgui.CustomCheckbox(u8'Уведомления', imguitable.cnotify) then
                         ini.main.notify = imguitable.cnotify[0]
                         inicfg.save(ini, directIni)
                     end
@@ -1469,19 +1469,19 @@ imgui.OnFrame(
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                     imgui.SelectItem(u8'Viber', imguitable.cvibernotify)
-                    imgui.Hint('roflnotify', u8('Ðîôë, ñ òîëüêî òåëåãîé è âê âûãëÿäèò ñêóäíî êàê-òî'))
+                    imgui.Hint('roflnotify', u8('Рофл, с только телегой и вк выглядит скудно как-то'))
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                     imgui.SelectItem(u8'WhatsApp', imguitable.cwhatsappnotify)
-                    imgui.Hint('roflnotify1', u8('Ðîôë, ñ òîëüêî òåëåãîé è âê âûãëÿäèò ñêóäíî êàê-òî'))
+                    imgui.Hint('roflnotify1', u8('Рофл, с только телегой и вк выглядит скудно как-то'))
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                     imgui.SelectItem(u8'Skype', imguitable.cskypenotify)
-                    imgui.Hint('roflnotify2', u8('Ðîôë, ñ òîëüêî òåëåãîé è âê âûãëÿäèò ñêóäíî êàê-òî'))
+                    imgui.Hint('roflnotify2', u8('Рофл, с только телегой и вк выглядит скудно как-то'))
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    imgui.SelectItem(u8'Ãîëóáèíàÿ ïî÷òà', imguitable.cgolubinayapochtanotify)
-                    imgui.Hint('roflnotify3', u8('Ðîôë, ñ òîëüêî òåëåãîé è âê âûãëÿäèò ñêóäíî êàê-òî'))
+                    imgui.SelectItem(u8'Голубиная почта', imguitable.cgolubinayapochtanotify)
+                    imgui.Hint('roflnotify3', u8('Рофл, с только телегой и вк выглядит скудно как-то'))
                     imgui.EndChild()
                     imgui.SameLine()
                     imgui.BeginChild('##notifysettings',imgui.ImVec2(-1,-1), true, imgui.WindowFlags.NoScrollbar)
@@ -1491,75 +1491,75 @@ imgui.OnFrame(
                         imgui.CenterText(u8'Telegram')
                         imgui.Separator()
                         imgui.PushItemWidth(-1)
-                        if imgui.InputTextWithHint('##tgbottoken', u8('Óêàæèòå token áîòà'), imguitable.tgbottoken, ffi.sizeof(imguitable.tgbottoken), imgui.InputTextFlags.Password) then
+                        if imgui.InputTextWithHint('##tgbottoken', u8('Укажите token бота'), imguitable.tgbottoken, ffi.sizeof(imguitable.tgbottoken), imgui.InputTextFlags.Password) then
                             ini.main.tgbottoken = ffi.string(imguitable.tgbottoken)
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.InputTextWithHint('##tgidchat', u8('Óêàæèòå Âàø chat id'), imguitable.tgchatid, ffi.sizeof(imguitable.tgchatid)) then
+                        if imgui.InputTextWithHint('##tgidchat', u8('Укажите Ваш chat id'), imguitable.tgchatid, ffi.sizeof(imguitable.tgchatid)) then
                             ini.main.tgbotchatid = ffi.string(imguitable.tgchatid)
                             inicfg.save(ini, directIni)
                         end
                         if bot == nil then
-                            if imgui.Button(u8'Ïîäêëþ÷èòüñÿ', imgui.ImVec2(-1,35)) then
+                            if imgui.Button(u8'Подключиться', imgui.ImVec2(-1,35)) then
                                 bot = Telegram(ini.main.tgbottoken)
                                 bot:connect()
                                 bot:on('ready', function(data)
-                                    msg('[Telegram Notifications] Áîò óñïåøíî çàïóñòèëñÿ! Èìÿ: '..data.first_name)
+                                    msg('[Telegram Notifications] Бот успешно запустился! Имя: '..data.first_name)
                                 end)
                             end
                         end
-                        if imgui.Button(u8('Òåñòîâîå ñîîáùåíèå'), imgui.ImVec2(-1,25)) then
-                            sendTelegramMsg('Ïðèâåò, ýòî òåñòîâîå ñîîáùåíèå! Âñå ðàáîòàåò!')
+                        if imgui.Button(u8('Тестовое сообщение'), imgui.ImVec2(-1,25)) then
+                            sendTelegramMsg('Привет, это тестовое сообщение! Все работает!')
                         end
-                        imgui.CenterText(u8'Âûáåðèòå ñîáûòèå,')
-                        imgui.CenterText(u8'ïðè êîòîðîì áóäåò ïðèõîäèòü óâåäîìëåíèå')
+                        imgui.CenterText(u8'Выберите событие,')
+                        imgui.CenterText(u8'при котором будет приходить уведомление')
 
-                        if imgui.CustomCheckbox(u8'Êðàø ñêðèïòà', imguitable.tgscriptcrash) then
+                        if imgui.CustomCheckbox(u8'Краш скрипта', imguitable.tgscriptcrash) then
                             ini.tgnotify.scriptcrash = imguitable.tgscriptcrash[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Óñòàíîâêà ïîçèöèè', imguitable.tgsetpos) then
+                        if imgui.CustomCheckbox(u8'Установка позиции', imguitable.tgsetpos) then
                             ini.tgnotify.setpos = imguitable.tgsetpos[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Óñòàíîâêà HP', imguitable.tgsethp) then
+                        if imgui.CustomCheckbox(u8'Установка HP', imguitable.tgsethp) then
                             ini.tgnotify.sethp = imguitable.tgsethp[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Óñòàíîâêà AP', imguitable.tgsetap) then
+                        if imgui.CustomCheckbox(u8'Установка AP', imguitable.tgsetap) then
                             ini.tgnotify.setap = imguitable.tgsetap[0]
                             inicfg.save(ini, directIni)
                         end
 
-                        if imgui.CustomCheckbox(u8'Âûäà÷à äåíåã', imguitable.tggivemoney) then
+                        if imgui.CustomCheckbox(u8'Выдача денег', imguitable.tggivemoney) then
                             ini.tgnotify.givemoney = imguitable.tggivemoney[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Óäàëåíèå îðóæèÿ', imguitable.tgremoveweapon) then
+                        if imgui.CustomCheckbox(u8'Удаление оружия', imguitable.tgremoveweapon) then
                             ini.tgnotify.removeweapon = imguitable.tgremoveweapon[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Çàìîðîçêà/Ðàçìîðîçêà', imguitable.tgplayercontrol) then
+                        if imgui.CustomCheckbox(u8'Заморозка/Разморозка', imguitable.tgplayercontrol) then
                             ini.tgnotify.playercontrol = imguitable.tgplayercontrol[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Èçìåíåíèå ñêèíà', imguitable.tgchangeskin) then
+                        if imgui.CustomCheckbox(u8'Изменение скина', imguitable.tgchangeskin) then
                             ini.tgnotify.changeskin = imguitable.tgchangeskin[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Ñìåðòü', imguitable.tgplayerdied) then
+                        if imgui.CustomCheckbox(u8'Смерть', imguitable.tgplayerdied) then
                             ini.tgnotify.playerdied = imguitable.tgplayerdied[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Ñïàâí', imguitable.tgplayerspawn) then
+                        if imgui.CustomCheckbox(u8'Спавн', imguitable.tgplayerspawn) then
                             ini.tgnotify.playerspawn = imguitable.tgplayerspawn[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Êèê', imguitable.tgdisconnect) then
+                        if imgui.CustomCheckbox(u8'Кик', imguitable.tgdisconnect) then
                             ini.tgnotify.disconnect = imguitable.tgdisconnect[0]
                             inicfg.save(ini, directIni)
                         end
-                        if imgui.CustomCheckbox(u8'Ïîòåðÿííî ñîåäèíåíèå', imguitable.tglostconnection) then
+                        if imgui.CustomCheckbox(u8'Потерянно соединение', imguitable.tglostconnection) then
                             ini.tgnotify.lostconnection = imguitable.tglostconnection[0]
                             inicfg.save(ini, directIni)
                         end
@@ -1571,18 +1571,18 @@ imgui.OnFrame(
                         imgui.CenterText(u8'Soon')
                     end
                     imgui.EndChild()
-                elseif tabs.maintab == 6 then --ÊÀÑÒÎÌÈÇÀÖÈß
+                elseif tabs.maintab == 6 then --КАСТОМИЗАЦИЯ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Êàñòîìèçàöèÿ')
+                    imgui.CenterText(u8'Кастомизация')
                     imgui.Separator()
                     imgui.BeginChild('##CusLeft', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Èçìåíåíèå öâåòîâ îêíà TAB', imguitable.ctab) then
+                    if imgui.CustomCheckbox(u8'Изменение цветов окна TAB', imguitable.ctab) then
                         ini.main.changetab = imguitable.ctab[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('tabcolor', u8'Öâåòà TAB áóäóò èçìåíÿòüñÿ')
+                    imgui.Hint('tabcolor', u8'Цвета TAB будут изменяться')
                     imgui.SetCursorPosX(10)
                     if imgui.ColorEdit4('##Color1', ctabone, imgui.ColorEditFlags.NoInputs + imgui.ColorEditFlags.AlphaBar) then ini.main.firsttabcolor = imgui.ColorConvertFloat4ToU32(imgui.ImVec4( ctabone[0], ctabone[1], ctabone[2], ctabone[3] )) inicfg.save(ini, directIni) end
                     imgui.SameLine()
@@ -1593,7 +1593,7 @@ imgui.OnFrame(
                     if imgui.ColorEdit4('##Color4', ctabfour, imgui.ColorEditFlags.NoInputs + imgui.ColorEditFlags.AlphaBar) then ini.main.fourtabcolor = imgui.ColorConvertFloat4ToU32(imgui.ImVec4( ctabfour[0], ctabfour[1], ctabfour[2], ctabfour[3] )) inicfg.save(ini, directIni) end
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Èçìåíåíèå ñòèëÿ äèàëîãà', imguitable.cdialog) then
+                    if imgui.CustomCheckbox(u8'Изменение стиля диалога', imguitable.cdialog) then
                         if imguitable.cdialog[0] then
                             dialogstyle(imguitable.ditype[0])
                         else
@@ -1602,7 +1602,7 @@ imgui.OnFrame(
                         ini.main.changedialog = imguitable.cdialog[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('dialogstyle', u8'Èçìåíåíèå âíåøíåãî âèäà îáû÷íûõ äàëîãîâ\n0 - äåôîëò ñ áëþðîì\n2 - áåç áëþðà (ïîâûøàåò ôïñ ïðè îòêðûòîì äèàëîãå)')
+                    imgui.Hint('dialogstyle', u8'Изменение внешнего вида обычных далогов\n0 - дефолт с блюром\n2 - без блюра (повышает фпс при открытом диалоге)')
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                     imgui.PushItemWidth(-1)
@@ -1615,7 +1615,7 @@ imgui.OnFrame(
                     end
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Èçìåíåíèå FOV', imguitable.cfov) then
+                    if imgui.CustomCheckbox(u8'Изменение FOV', imguitable.cfov) then
                         if imguitable.cfov[0] then
                             cameraSetLerpFov(imguitable.fov[0], imguitable.fov[0], 1000, 1)
                         else
@@ -1632,11 +1632,11 @@ imgui.OnFrame(
                     end
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Äèíàìè÷åñêèé FOV', imguitable.cdynamicfov) then
+                    if imgui.CustomCheckbox(u8'Динамический FOV', imguitable.cdynamicfov) then
                         ini.main.dynamicfov = imguitable.cdynamicfov[0]
                         inicfg.save(ini, directIni)
                     end
-                    imgui.Hint('##dynaimcfov', u8'Äèíàìè÷åñêèé FOV êàê â GTA 4\nÍå ðàáîòàåò ñ âêë èçíåíåíèåì FOV')
+                    imgui.Hint('##dynaimcfov', u8'Динамический FOV как в GTA 4\nНе работает с вкл изненением FOV')
                     imgui.EndChild()
 
                     imgui.SameLine()
@@ -1644,18 +1644,18 @@ imgui.OnFrame(
                     imgui.BeginChild('##CusRight', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Áëîêèðîâêà ñìåíû âðåìåíè', imguitable.ctime) then
+                    if imgui.CustomCheckbox(u8'Блокировка смены времени', imguitable.ctime) then
                         ini.main.blocktime = imguitable.ctime[0]
                         inicfg.save(ini, directIni)
                     end
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Áëîêèðîâêà ñìåíû ïîãîäû', imguitable.cweather) then
+                    if imgui.CustomCheckbox(u8'Блокировка смены погоды', imguitable.cweather) then
                         ini.main.blockweather = imguitable.cweather[0]
                         inicfg.save(ini, directIni)
                     end
                     imgui.Separator()
-                    imgui.CenterText(u8'Óñòàíîâêà ïîãîäû è âðåìåíè')
+                    imgui.CenterText(u8'Установка погоды и времени')
                     imgui.PushItemWidth(imgui.GetWindowSize().x-10)
                     if imgui.SliderInt('##time',imguitable.stime,0,23) then
                         setWorldTime(imguitable.stime[0])
@@ -1668,12 +1668,12 @@ imgui.OnFrame(
                         inicfg.save(ini, directIni)
                     end
                     imgui.EndChild()
-                elseif tabs.maintab == 7 then -- ÍÀÑÒÐÎÉÊÈ
+                elseif tabs.maintab == 7 then -- НАСТРОЙКИ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Íàñòðîéêè')
+                    imgui.CenterText(u8'Настройки')
                     imgui.Separator()
                     imgui.BeginChild('##SLeft', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
-                    local keymenu = hotkey.KeyEditor('menu', u8'Îòêðûòèå ìåíþ', imgui.ImVec2(-1, 24))
+                    local keymenu = hotkey.KeyEditor('menu', u8'Открытие меню', imgui.ImVec2(-1, 24))
                     if keymenu then
                         ini.bind.menu = encodeJson(keymenu)
                         inicfg.save(ini, directIni)
@@ -1683,25 +1683,25 @@ imgui.OnFrame(
                     imgui.BeginChild('##SRight', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
                     imgui.SetCursorPosX(10)
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
-                    if imgui.CustomCheckbox(u8'Ðàçìûòèå ôîíà â íàñòðîéêàõ', imguitable.cpopupblur) then
+                    if imgui.CustomCheckbox(u8'Размытие фона в настройках', imguitable.cpopupblur) then
                         ini.main.popupblur = imguitable.cpopupblur[0]
                         inicfg.save(ini, directIni)
                     end
                     imgui.EndChild()
-                elseif tabs.maintab == 8 then -- ÈÍÔÎÐÌÀÖÈß
+                elseif tabs.maintab == 8 then -- ИНФОРМАЦИЯ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
-                    imgui.CenterText(u8'Èíôîðìàöèÿ')
+                    imgui.CenterText(u8'Информация')
                     imgui.Separator()
                     imgui.BeginChild('##info', imgui.ImVec2(-1,-1), true)
-                    imgui.TextWrapped(u8'Rodina Helper - ýòî íîâûé è óíèêàëüíûé â ñâîåì ðîäå ïîìîùíèê äëÿ ïðîåêòà Rodina RP.\nÑêðèïò èìååò î÷åíü ãèáêèå íàñòðîéêè è îáøèðíûé ôóíêöèîíàë, îí ïîäîéäåò âñåì êàòåãîðèÿì èãðîêîâ.\nÑêðèïò íå âûñòóïàåò â ðîëå ÷èòà, îí íàïðàâëåí íà îáëåã÷åíèå èãðîâîãî ïðîöåññà.')
+                    imgui.TextWrapped(u8'Rodina Helper - это новый и уникальный в своем роде помощник для проекта Rodina RP.\nСкрипт имеет очень гибкие настройки и обширный функционал, он подойдет всем категориям игроков.\nСкрипт не выступает в роле чита, он направлен на облегчение игрового процесса.')
                     imgui.SetCursorPosY(200)
-                    imgui.Text(u8'Àâòîð:')
+                    imgui.Text(u8'Автор:')
                     imgui.SameLine()
                     imgui.Link('https://www.blast.hk/members/413482/', u8'Willy4ka')
-                    imgui.Text(u8'Íàøëè áàã?')
+                    imgui.Text(u8'Нашли баг?')
                     imgui.SameLine()
-                    imgui.Link('https://www.blast.hk/members/413482/', u8'Íàïèøèòå î íåì â òåìó!')
-                    imgui.Text(u8'Ïîääåðæàòü àâòîðà:')
+                    imgui.Link('https://www.blast.hk/members/413482/', u8'Напишите о нем в тему!')
+                    imgui.Text(u8'Поддержать автора:')
                     imgui.SameLine()
                     imgui.Link('https://www.donationalerts.com/r/willy4ka', u8'DonationAlerts')
                     imgui.EndChild()
@@ -1782,21 +1782,21 @@ imgui.OnFrame(
             imgui.Separator()
             imgui.BeginChild('##upd', imgui.ImVec2(-1,-1), true)
             imgui.PushFont(arialtext)
-            imgui.CenterText(u8'Äîñòóïíî îáíîâëåíèå!')
+            imgui.CenterText(u8'Доступно обновление!')
             imgui.PopFont()
             if updates.ver ~= nil and updates.date ~= nil and updates.changes ~= nil then
-                imgui.Text(u8'Äàòà: '..updates.date)
-                imgui.Text(u8'Âåðñèÿ: '..updates.ver)
-                imgui.Text(u8'Èçìåíåíèÿ:')
+                imgui.Text(u8'Дата: '..updates.date)
+                imgui.Text(u8'Версия: '..updates.ver)
+                imgui.Text(u8'Изменения:')
                 imgui.BeginChild('##updatelist', imgui.ImVec2(-1, 230), true, imgui.WindowFlags.NoScrollbar)
                 imgui.Text(updates.changes)
                 imgui.EndChild()
                 imgui.SetCursorPosY(imgui.GetWindowSize().y-40)
-                if imgui.Button(u8'Óñòàíîâèòü', imgui.ImVec2(187,35)) then
+                if imgui.Button(u8'Установить', imgui.ImVec2(187,35)) then
                     downloadUpdate()
                 end
                 imgui.SameLine()
-                if imgui.Button(u8'Ïðîïóñòèòü', imgui.ImVec2(187,35)) then
+                if imgui.Button(u8'Пропустить', imgui.ImVec2(187,35)) then
                     imguitable.updateWindow.fl()
                 end
             end
@@ -1841,11 +1841,11 @@ function onReceivePacket(id, bs)
         end
     elseif id == 33 then
         if imguitable.tglostconnection[0] then
-            sendTelegramMsg('Ïîòåðÿííî ñîåäèíåíèå ñ ñåðâåðîì!')
+            sendTelegramMsg('Потерянно соединение с сервером!')
         end
     elseif id == 32 then
         if imguitable.tgdisconnect[0] then
-            sendTelegramMsg('Ñåðâåð çàêðûë ñîåäèíåíèå.')
+            sendTelegramMsg('Сервер закрыл соединение.')
         end
     end
 end
@@ -2466,7 +2466,7 @@ end
 function onScriptTerminate(s, q)
     if s == thisScript() then
         if imguitable.tgscriptcrash[0] then
-            sendTelegramMsg('Ñêðèïò áûë âûãðóæåí/ïåðåçàãðóæåí')
+            sendTelegramMsg('Скрипт был выгружен/перезагружен')
         end
         for k, v in pairs(binds) do
             for key, value in pairs(v) do
@@ -2634,56 +2634,56 @@ function sendTelegramMsg(text)
 end
 function sampev.onSetPlayerPos(position)
     if imguitable.tgsetpos[0] then
-        sendTelegramMsg('Ñåðâåð èçìåíèë ïîçèöèþ ïåðñîíàæà íà '..position.x..', '..position.y..', '..position.z)
+        sendTelegramMsg('Сервер изменил позицию персонажа на '..position.x..', '..position.y..', '..position.z)
     end
 end
 function sampev.onSetPlayerHealth(health)
     if imguitable.tgsethp[0] then
-        sendTelegramMsg('Ñåðâåð èçìåíèë HP ïåðñîíàæà íà '..health)
+        sendTelegramMsg('Сервер изменил HP персонажа на '..health)
     end
 end
 function sampev.onSetPlayerArmour(armour)
     if imguitable.tgsetap[0] then
-        sendTelegramMsg('Ñåðâåð èçìåíèë AP ïåðñîíàæà íà '..armour)
+        sendTelegramMsg('Сервер изменил AP персонажа на '..armour)
     end
 end
 function sampev.onGivePlayerMoney(money)
     if imguitable.tggivemoney[0] then
-        sendTelegramMsg('Ñåðâåð âûäàë ïåðñîíàæó $'..money)
+        sendTelegramMsg('Сервер выдал персонажу $'..money)
     end
 end
 function sampev.onResetPlayerWeapons()
     if imguitable.tgremoveweapon[0] then
-        sendTelegramMsg('Ñåðâåð óäàëèë îðóæèå ó ïåðñîíàæà!')
+        sendTelegramMsg('Сервер удалил оружие у персонажа!')
     end
 end
 function sampev.onTogglePlayerControllable(controllable)
     if imguitable.tgplayercontrol[0] then
-        sendTelegramMsg('Ñåðâåð '..(controllable and 'ðàçìîðîçèë' or 'çàìîðîçèë') .. ' ïåðñîíàæà')
+        sendTelegramMsg('Сервер '..(controllable and 'разморозил' or 'заморозил') .. ' персонажа')
     end
 end
 function sampev.onSetPlayerSkin(playerId, skinId)
     if playerId == select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)) then
         if imguitable.tgchangeskin[0] then
-            sendTelegramMsg('Ñåðâåð èçìåíèë ñêèí íà '..skinId..' ID')
+            sendTelegramMsg('Сервер изменил скин на '..skinId..' ID')
         end
     end
 end
 function sampev.onPlayerDeath(playerId)
     if playerId == select(2, sampGetPlayerIdByCharHandle(PLAYER_PED)) then
         if imguitable.tgplayerdied[0] then
-            sendTelegramMsg('Ïåðñîíàæ óìåð!')
+            sendTelegramMsg('Персонаж умер!')
         end
     end
 end
 function sampev.onSendSpawn()
     if imguitable.tgplayerspawn[0] then
-        sendTelegramMsg('Ïåðñîíàæ áûë çàñïàâíåí!')
+        sendTelegramMsg('Персонаж был заспавнен!')
     end
 end
 function sampev.onShowDialog(dialogId, style, title, button1, button2, text)
     if imguitable.cautopin[0] then
-        if text:find('%{......%}Âû äîëæíû ïîäòâåðäèòü ñâîé PIN%-êîä ê êàðòî÷êå%.\nÂâåäèòå ñâîé êîä â íèæå óêàçàíóþ ñòðîêó:') then
+        if text:find('%{......%}Вы должны подтвердить свой PIN%-код к карточке%.\nВведите свой код в ниже указаную строку:') then
             sampSendDialogResponse(dialogId, 1, nil, ffi.string(imguitable.pinpass))
             return false
         end
@@ -2705,6 +2705,8 @@ function checkupdate()
                     updates.date = json.date
                     updates.changes = json.changelog
                     imguitable.updateWindow.tr()
+                else
+                    msg('У вас установленна актуальная версия!')
                 end
             end
         end
