@@ -7,6 +7,7 @@ script_description('Helper for Rodina Role Play')
 
 local imgui                 = require('mimgui')
 local encoding              = require('encoding')                                                                                       encoding.default = 'CP1251'
+local u8                    = encoding.UTF8
 local sampev                = require('lib.samp.events')
 local ffi                   = require('ffi')
 local mimgui_blur           = require('mimgui_blur')
@@ -55,10 +56,12 @@ local ini = inicfg.load(inicfg.load({
         tgbottoken = '',
         tgbotchatid = '',
         popupblur = true,
+        blurradius = 20,
         infiniterun = false,
         autobike = false,
         autopin = false,
         pinpassword = '',
+        autoprizes = false
     },
     bind = {
         earmour = false,
@@ -138,7 +141,6 @@ local ini = inicfg.load(inicfg.load({
     }
 }, directIni))
 inicfg.save(ini, directIni)
-
 local ui_meta = {
     __index = function(self, v)
         if v == "switch" then
@@ -230,7 +232,6 @@ local ui_meta = {
         end
     end
 }
-
 local imguitable = {
     renderWindow = { state = false, duration = 0.3 },
     infoBarWindow = { state = false, duration = 0.3 },
@@ -259,11 +260,13 @@ local imguitable = {
     cinfiniterun = imgui.new.bool(ini.main.infiniterun),
     cautobike = imgui.new.bool(ini.main.autobike),
     cautopin = imgui.new.bool(ini.main.autopin),
+    cautoprizes = imgui.new.bool(ini.main.autoprizes),
 
     stime = imgui.new.int(ini.main.time),
     fov = imgui.new.int(ini.main.fov),
     ditype = imgui.new.int(ini.main.dialogtype),
     sweather = imgui.new.int(ini.main.weather),
+    blurradius = imgui.new.int(ini.main.blurradius),
 
     carmour = imgui.new.bool(ini.bind.earmour),
     cmask = imgui.new.bool(ini.bind.emack),
@@ -556,7 +559,7 @@ function main()
         dialogstyle(imguitable.ditype[0])
     end
     checkupdate()
-    msg('Скрипт успешно загружен!')
+    msg('Скрипт успешно загружен! Открыть меню: /rhelp')
     while true do
         wait(0)
         if imguitable.cfov[0] then
@@ -911,7 +914,7 @@ imgui.OnFrame(
                         imgui.OpenPopup('Создание бинда')
                     end
                     if imgui.BeginPopupModal('Создание бинда', _, imgui.WindowFlags.NoResize) then
-                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), 20) end
+                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), imguitable.blurradius[0]) end
                         imgui.SetWindowSizeVec2(imgui.ImVec2(350, -1))
                         imgui.CenterText('НАЗВАНИЕ БИНДА НЕ ДОЛЖНО ПОВТОРЯТЬСЯ')
                         imgui.CenterText('И НЕ ИМЕТЬ РУССКИХ БУКВ')
@@ -1036,7 +1039,7 @@ imgui.OnFrame(
                         end
                     end
                     if imgui.BeginPopupModal('Редактирование бинда', _, imgui.WindowFlags.NoResize) then
-                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), 20) end
+                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), imguitable.blurradius[0]) end
                         imgui.SetWindowSizeVec2(imgui.ImVec2(350, -1))
                         imgui.PushItemWidth(-1)
                         local cbind = hotkey.KeyEditor('editbind', 'Клавиша', imgui.ImVec2(-1, 24))
@@ -1193,6 +1196,12 @@ imgui.OnFrame(
                             inicfg.save(ini, directIni)
                         end
                     end
+                    imgui.SetCursorPosX(10)
+                    imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
+                    if imgui.CustomCheckbox('Авто сбор /dw_prizes', imguitable.cautoprizes) then
+                        ini.main.autoprizes = imguitable.cautoprizes[0]
+                        inicfg.save(ini, directIni)
+                    end
                     imgui.EndChild()
                     imgui.SameLine()
                     imgui.BeginChild('##ORight', imgui.ImVec2(235, -1), true, imgui.WindowFlags.NoScrollbar)
@@ -1219,7 +1228,7 @@ imgui.OnFrame(
                         imgui.OpenPopup('Info Bar')
                     end
                     if imgui.BeginPopupModal('Info Bar', _, imgui.WindowFlags.NoResize) then
-                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), 20) end
+                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), imguitable.blurradius[0]) end
                         imgui.SetWindowSizeVec2(imgui.ImVec2(350, -1))
                         textbg()
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
@@ -1286,7 +1295,7 @@ imgui.OnFrame(
                         imgui.OpenPopup('Auto Piar')
                     end
                     if imgui.BeginPopupModal('Auto Piar', _, imgui.WindowFlags.NoResize) then
-                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), 20) end
+                        if imguitable.cpopupblur[0] then mimgui_blur.apply(imgui.GetBackgroundDrawList(), imguitable.blurradius[0]) end
                         imgui.SetWindowSizeVec2(imgui.ImVec2(450, -1))
                         textbg()
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
@@ -1685,21 +1694,34 @@ imgui.OnFrame(
                         ini.main.popupblur = imguitable.cpopupblur[0]
                         inicfg.save(ini, directIni)
                     end
+                    if imguitable.cpopupblur[0] then
+                        imgui.PushItemWidth(-1)
+                        imgui.Text('Радиус размытия')
+                        if imgui.SliderInt('##Радиус размытия', imguitable.blurradius, 1, 50) then
+                            ini.main.blurradius = imguitable.blurradius[0]
+                            inicfg.save(ini, directIni)
+                        end
+                    end
                     imgui.EndChild()
                 elseif tabs.maintab == 8 then -- ИНФОРМАЦИЯ
                     imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
                     imgui.CenterText('Информация')
                     imgui.Separator()
                     imgui.BeginChild('##info', imgui.ImVec2(-1,-1), true)
-                    imgui.TextWrapped('Rodina Helper - это новый и уникальный в своем роде помощник для проекта Rodina RP.\nСкрипт имеет очень гибкие настройки и обширный функционал, он подойдет всем категориям игроков.\nСкрипт не выступает в роле чита, он направлен на облегчение игрового процесса.')
+                    imgui.SetCursorPosX(10)
+                    imgui.SetCursorPosY(10)
+                    imgui.TextWrapped('Rodina Helper - это новый и уникальный в своем роде помощник для проекта Rodina RP.\nСкрипт имеет функций, и подойдет всем категориям игроков.\nСкрипт не выступает в роле чита, он направлен на помощь и облегчение игрового процесса.')
                     imgui.SetCursorPosY(200)
+                    imgui.SetCursorPosX(10)
                     imgui.Text('Автор:')
                     imgui.SameLine()
                     imgui.Link('https://www.blast.hk/members/413482/', 'Willy4ka')
+                    imgui.SetCursorPosX(10)
                     imgui.Text('Нашли баг?')
                     imgui.SameLine()
                     imgui.Link('https://www.blast.hk/members/413482/', 'Напишите о нем в тему!')
-                    imgui.Text('Поддержать автора:')
+                    imgui.SetCursorPosX(10)
+                    imgui.Text('Поддержать разработку:')
                     imgui.SameLine()
                     imgui.Link('https://www.donationalerts.com/r/willy4ka', 'DonationAlerts')
                     imgui.EndChild()
@@ -1741,7 +1763,7 @@ imgui.OnFrame(
         if imgui.Begin('##InfoBar', _, imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoScrollbar) then
             local result, id = sampGetPlayerIdByCharHandle(PLAYER_PED)
             if result then
-                local nick = sampGetPlayerNickname(id)
+                local nick = u8(sampGetPlayerNickname(id))
                 local hp = sampGetPlayerHealth(id)
                 local ap = sampGetPlayerArmor(id)
                 local ping = sampGetPlayerPing(id)
@@ -2686,6 +2708,12 @@ function sampev.onShowDialog(dialogId, style, title, button1, button2, text)
             return false
         end
     end
+    if imguitable.cautoprizes[0] then
+        if #text >0 then
+            sampSendDialogResponse(dialogId, 1, 0, nil)
+            return false
+        end
+    end
 end
 function checkupdate()
     local download = require('moonloader').download_status
@@ -2722,4 +2750,11 @@ function downloadUpdate()
 end
 function u8d(text)
    return encoding.UTF8:decode(text)
+end
+function sampev.onServerMessage(color, text)
+    if imguitable.cautoprizes[0] then
+        if text:find('%[Информация%] %{......%}Вам была выдана Ежедневная награда за ваш онлайн%. Используйте /dw_prizes') then
+            sampSendChat('/dw_prizes')
+        end
+    end
 end
