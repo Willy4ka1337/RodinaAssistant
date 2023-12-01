@@ -2,7 +2,7 @@
 
 script_name('RodinaHelper')
 script_author('Willy4ka')
-script_version('1.1')
+script_version('1.0')
 script_description('Helper for Rodina Role Play')
 
 local imgui                 = require('mimgui')
