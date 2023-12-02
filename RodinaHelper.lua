@@ -138,6 +138,9 @@ local ini = inicfg.load(inicfg.load({
         fam = false,
         famwait = 0,
         efam = '',
+        ad = false,
+        adwait = 0,
+        ead = '',
     }
 }, directIni))
 inicfg.save(ini, directIni)
@@ -317,6 +320,7 @@ local imguitable = {
     cpiarrb = imgui.new.bool(ini.autopiar.rb),
     cpiarfb = imgui.new.bool(ini.autopiar.fb),
     cpiarfam = imgui.new.bool(ini.autopiar.fam),
+    cpiarad = imgui.new.bool(ini.autopiar.ad),
 
     wpiarchat = imgui.new.int(ini.autopiar.chatwait),
     wpiars = imgui.new.int(ini.autopiar.swait),
@@ -325,6 +329,7 @@ local imguitable = {
     wpiarrb = imgui.new.int(ini.autopiar.rbwait),
     wpiarfb = imgui.new.int(ini.autopiar.fbwait),
     wpiarfam = imgui.new.int(ini.autopiar.famwait),
+    wpiarad = imgui.new.int(ini.autopiar.adwait),
 
     epiarchat = imgui.new.char[128](ini.autopiar.echat),
     epiars = imgui.new.char[128](ini.autopiar.es),
@@ -333,6 +338,7 @@ local imguitable = {
     epiarrb = imgui.new.char[128](ini.autopiar.erb),
     epiarfb = imgui.new.char[128](ini.autopiar.efb),
     epiarfam = imgui.new.char[128](ini.autopiar.efam),
+    epiarad = imgui.new.char[128](ini.autopiar.ead),
 }
 
 local inputhotkeyname = imgui.new.char[64]()
@@ -624,7 +630,9 @@ function main()
             if text == '' then
                 ok = false
             end
-            imguitable.calcWindow[0] = ok
+            if ok ~= nil then
+                imguitable.calcWindow[0] = ok
+            end
         end
         if changeinfobarpos then
             ini.main.infoBarPosX, ini.main.infoBarPosY = getCursorPos()
@@ -644,34 +652,13 @@ lua_thread.create(function()
     while true do
         wait(0)
         if imguitable.cautopiar[0] then
-            if imguitable.cpiarchat[0] then
-                sampSendChat(u8d(ffi.string(imguitable.epiarchat)))
-                wait(imguitable.wpiarchat[0])
-            end
-            if imguitable.cpiars[0] then
-                sampSendChat('/s '..u8d(ffi.string(imguitable.epiars)))
-                wait(imguitable.wpiars[0])
-            end
-            if imguitable.cpiarc[0] then
-                sampSendChat('/c '..u8d(ffi.string(imguitable.epiarc)))
-                wait(imguitable.wpiarc[0])
-            end
-            if imguitable.cpiarvr[0] then
-                sampSendChat('/vr '..u8d(ffi.string(imguitable.epiarvr)))
-                wait(imguitable.wpiarvr[0])
-            end
-            if imguitable.cpiarrb[0] then
-                sampSendChat('/rb '..u8d(ffi.string(imguitable.epiarrb)))
-                wait(imguitable.wpiarrb[0])
-            end
-            if imguitable.cpiarfb[0] then
-                sampSendChat('/fb '..u8d(ffi.string(imguitable.epiarfb)))
-                wait(imguitable.wpiarfb[0])
-            end
-            if imguitable.cpiarfam[0] then
-                sampSendChat('/fam '..u8d(ffi.string(imguitable.epiarfam)))
-                wait(imguitable.wpiarfam[0])
-            end
+            
+            
+            
+            
+            
+            
+            
         end
         if imguitable.cautobike[0] then
             if isCharOnAnyBike(PLAYER_PED) then
@@ -697,6 +684,95 @@ lua_thread.create(function()
     end
 end)
 
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiarchat[0] then
+                sampSendChat(u8d(ffi.string(imguitable.epiarchat)))
+                wait(imguitable.wpiarchat[0])
+            end
+        end
+    end
+end)
+
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiars[0] then
+                sampSendChat('/s '..u8d(ffi.string(imguitable.epiars)))
+                wait(imguitable.wpiars[0])
+            end
+        end
+    end
+end)
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiarc[0] then
+                sampSendChat('/c '..u8d(ffi.string(imguitable.epiarc)))
+                wait(imguitable.wpiarc[0])
+            end
+        end
+    end
+end)
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiarvr[0] then
+                sampSendChat('/vr '..u8d(ffi.string(imguitable.epiarvr)))
+                wait(imguitable.wpiarvr[0])
+            end
+        end
+    end
+end)
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiarrb[0] then
+                sampSendChat('/rb '..u8d(ffi.string(imguitable.epiarrb)))
+                wait(imguitable.wpiarrb[0])
+            end
+        end
+    end
+end)
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiarfb[0] then
+                sampSendChat('/fb '..u8d(ffi.string(imguitable.epiarfb)))
+                wait(imguitable.wpiarfb[0])
+            end
+        end
+    end
+end)
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiarfam[0] then
+                sampSendChat('/fam '..u8d(ffi.string(imguitable.epiarfam)))
+                wait(imguitable.wpiarfam[0])
+            end
+        end
+    end
+end)
+lua_thread.create(function ()
+    while true do
+        wait(0)
+        if imguitable.cautopiar[0] then
+            if imguitable.cpiarad[0] then
+                sampSendChat('/ad 1 '..u8d(ffi.string(imguitable.epiarad)))
+                wait(imguitable.wpiarad[0])
+            end
+        end
+    end
+end)
 imgui.OnFrame(
     function() return imguitable.renderWindow.alpha>0.00 end,
     function(self)
@@ -1435,6 +1511,24 @@ imgui.OnFrame(
                         imgui.PushItemWidth(130)
                         if imgui.InputInt('##wpiarfam',imguitable.wpiarfam,100) then
                             ini.autopiar.famwait = imguitable.wpiarfam[0]
+                            inicfg.save(ini, directIni)
+                        end
+                        imgui.SetCursorPosX(10)
+                        imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
+                        if imgui.CustomCheckbox('##ad', imguitable.cpiarad) then
+                            ini.autopiar.ad = imguitable.cpiarad[0]
+                            inicfg.save(ini, directIni)
+                        end
+                        imgui.SameLine()
+                        imgui.PushItemWidth(255)
+                        if imgui.InputTextWithHint('##adinput', 'СМИ (/ad)', imguitable.epiarad, ffi.sizeof(imguitable.epiarad)) then
+                            ini.autopiar.ead = ffi.string(imguitable.epiarad)
+                            inicfg.save(ini, directIni)
+                        end
+                        imgui.SameLine()
+                        imgui.PushItemWidth(130)
+                        if imgui.InputInt('##wpiarad',imguitable.wpiarad,100) then
+                            ini.autopiar.adwait = imguitable.wpiarad[0]
                             inicfg.save(ini, directIni)
                         end
                         imgui.EndChild()
