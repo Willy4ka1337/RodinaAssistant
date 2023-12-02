@@ -2,7 +2,7 @@
 
 script_name('RodinaHelper')
 script_author('Willy4ka')
-script_version('1.0')
+script_version('1.1')
 script_description('Helper for Rodina Role Play')
 
 local imgui                 = require('mimgui')
@@ -141,6 +141,7 @@ local ini = inicfg.load(inicfg.load({
         ad = false,
         adwait = 0,
         ead = '',
+        vipad = false,
     }
 }, directIni))
 inicfg.save(ini, directIni)
@@ -321,6 +322,7 @@ local imguitable = {
     cpiarfb = imgui.new.bool(ini.autopiar.fb),
     cpiarfam = imgui.new.bool(ini.autopiar.fam),
     cpiarad = imgui.new.bool(ini.autopiar.ad),
+    cvipad = imgui.new.bool(ini.autopiar.vipad),
 
     wpiarchat = imgui.new.int(ini.autopiar.chatwait),
     wpiars = imgui.new.int(ini.autopiar.swait),
@@ -651,15 +653,6 @@ lua_thread.create(function()
     }
     while true do
         wait(0)
-        if imguitable.cautopiar[0] then
-            
-            
-            
-            
-            
-            
-            
-        end
         if imguitable.cautobike[0] then
             if isCharOnAnyBike(PLAYER_PED) then
                 for k,v in pairs(bikes) do
@@ -690,7 +683,7 @@ lua_thread.create(function ()
         if imguitable.cautopiar[0] then
             if imguitable.cpiarchat[0] then
                 sampSendChat(u8d(ffi.string(imguitable.epiarchat)))
-                wait(imguitable.wpiarchat[0])
+                wait(imguitable.wpiarchat[0]*1000)
             end
         end
     end
@@ -702,7 +695,7 @@ lua_thread.create(function ()
         if imguitable.cautopiar[0] then
             if imguitable.cpiars[0] then
                 sampSendChat('/s '..u8d(ffi.string(imguitable.epiars)))
-                wait(imguitable.wpiars[0])
+                wait(imguitable.wpiars[0]*1000)
             end
         end
     end
@@ -713,7 +706,7 @@ lua_thread.create(function ()
         if imguitable.cautopiar[0] then
             if imguitable.cpiarc[0] then
                 sampSendChat('/c '..u8d(ffi.string(imguitable.epiarc)))
-                wait(imguitable.wpiarc[0])
+                wait(imguitable.wpiarc[0]*1000)
             end
         end
     end
@@ -724,7 +717,7 @@ lua_thread.create(function ()
         if imguitable.cautopiar[0] then
             if imguitable.cpiarvr[0] then
                 sampSendChat('/vr '..u8d(ffi.string(imguitable.epiarvr)))
-                wait(imguitable.wpiarvr[0])
+                wait(imguitable.wpiarvr[0]*1000)
             end
         end
     end
@@ -746,7 +739,7 @@ lua_thread.create(function ()
         if imguitable.cautopiar[0] then
             if imguitable.cpiarfb[0] then
                 sampSendChat('/fb '..u8d(ffi.string(imguitable.epiarfb)))
-                wait(imguitable.wpiarfb[0])
+                wait(imguitable.wpiarfb[0]*1000)
             end
         end
     end
@@ -757,7 +750,7 @@ lua_thread.create(function ()
         if imguitable.cautopiar[0] then
             if imguitable.cpiarfam[0] then
                 sampSendChat('/fam '..u8d(ffi.string(imguitable.epiarfam)))
-                wait(imguitable.wpiarfam[0])
+                wait(imguitable.wpiarfam[0]*1000)
             end
         end
     end
@@ -768,7 +761,7 @@ lua_thread.create(function ()
         if imguitable.cautopiar[0] then
             if imguitable.cpiarad[0] then
                 sampSendChat('/ad 1 '..u8d(ffi.string(imguitable.epiarad)))
-                wait(imguitable.wpiarad[0])
+                wait(imguitable.wpiarad[0]*1000)
             end
         end
     end
@@ -1386,7 +1379,18 @@ imgui.OnFrame(
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
                         imgui.CenterText(('Настройки'))
                         imgui.Separator()
-                        imgui.BeginChild('##autopiarpopup', imgui.ImVec2(-1,280),true)
+                        imgui.BeginChild('##autopiarpopup', imgui.ImVec2(-1,305),true)
+                        imgui.Columns(3, '123', true)
+                        imgui.SetColumnWidth(0, 70)
+                        imgui.SetColumnWidth(1, 230)
+                        imgui.Text('Вкл/Выкл')
+                        imgui.NextColumn()
+                        imgui.Text('Чат, без команды')
+                        imgui.NextColumn()
+                        imgui.Text('Задержка (в сек)')
+                        imgui.NextColumn()
+                        imgui.Columns(1)
+                        imgui.Separator()
                         imgui.SetCursorPosX(10)
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                         if imgui.CustomCheckbox('##chat', imguitable.cpiarchat) then
@@ -1853,7 +1857,7 @@ imgui.OnFrame(
     function(self)
         self.HideCursor = not changeinfobarpos
         imgui.PushStyleVarFloat(imgui.StyleVar.Alpha, imguitable.infoBarWindow.alpha)
-        local sizeX, sizeY = 220, -1
+        local sizeX, sizeY = 210, -1
         imgui.SetNextWindowPos(imgui.ImVec2(ini.main.infoBarPosX, ini.main.infoBarPosY))
         imgui.SetNextWindowSize(imgui.ImVec2(sizeX, sizeY), imgui.Cond.FirstUseEver)
         if imgui.Begin('##InfoBar', _, imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoScrollbar) then
