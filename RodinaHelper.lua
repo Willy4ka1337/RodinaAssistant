@@ -2,7 +2,7 @@
 
 script_name('RodinaHelper')
 script_author('Willy4ka')
-script_version('1.0')
+script_version('1.1')
 script_description('Helper for Rodina Role Play')
 
 local imgui                 = require('mimgui')
@@ -645,31 +645,31 @@ lua_thread.create(function()
         wait(0)
         if imguitable.cautopiar[0] then
             if imguitable.cpiarchat[0] then
-                sampSendChat((ffi.string(imguitable.epiarchat)))
+                sampSendChat(u8d(ffi.string(imguitable.epiarchat)))
                 wait(imguitable.wpiarchat[0])
             end
             if imguitable.cpiars[0] then
-                sampSendChat('/s '..(ffi.string(imguitable.epiars)))
+                sampSendChat(u8d'/s '..(ffi.string(imguitable.epiars)))
                 wait(imguitable.wpiars[0])
             end
             if imguitable.cpiarc[0] then
-                sampSendChat('/c '..(ffi.string(imguitable.epiarc)))
+                sampSendChat(u8d'/c '..(ffi.string(imguitable.epiarc)))
                 wait(imguitable.wpiarc[0])
             end
             if imguitable.cpiarvr[0] then
-                sampSendChat('/vr '..(ffi.string(imguitable.epiarvr)))
+                sampSendChat(u8d'/vr '..(ffi.string(imguitable.epiarvr)))
                 wait(imguitable.wpiarvr[0])
             end
             if imguitable.cpiarrb[0] then
-                sampSendChat('/rb '..(ffi.string(imguitable.epiarrb)))
+                sampSendChat(u8d'/rb '..(ffi.string(imguitable.epiarrb)))
                 wait(imguitable.wpiarrb[0])
             end
             if imguitable.cpiarfb[0] then
-                sampSendChat('/fb '..(ffi.string(imguitable.epiarfb)))
+                sampSendChat(u8d'/fb '..(ffi.string(imguitable.epiarfb)))
                 wait(imguitable.wpiarfb[0])
             end
             if imguitable.cpiarfam[0] then
-                sampSendChat('/fam '..(ffi.string(imguitable.epiarfam)))
+                sampSendChat(u8d'/fam '..(ffi.string(imguitable.epiarfam)))
                 wait(imguitable.wpiarfam[0])
             end
         end
@@ -2442,6 +2442,7 @@ function onScriptTerminate(s, q)
         for k, v in pairs(binds) do
             for key, value in pairs(v) do
                 ini.bind.k = encodeJson(v.key)
+                inicfg.save(ini, directIni)
             end
         end
     end
