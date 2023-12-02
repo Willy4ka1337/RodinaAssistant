@@ -2,7 +2,7 @@
 
 script_name('RodinaHelper')
 script_author('Willy4ka')
-script_version('1.1')
+script_version('1.0')
 script_description('Helper for Rodina Role Play')
 
 local imgui                 = require('mimgui')
@@ -649,27 +649,27 @@ lua_thread.create(function()
                 wait(imguitable.wpiarchat[0])
             end
             if imguitable.cpiars[0] then
-                sampSendChat(u8d'/s '..(ffi.string(imguitable.epiars)))
+                sampSendChat('/s '..u8d(ffi.string(imguitable.epiars)))
                 wait(imguitable.wpiars[0])
             end
             if imguitable.cpiarc[0] then
-                sampSendChat(u8d'/c '..(ffi.string(imguitable.epiarc)))
+                sampSendChat('/c '..u8d(ffi.string(imguitable.epiarc)))
                 wait(imguitable.wpiarc[0])
             end
             if imguitable.cpiarvr[0] then
-                sampSendChat(u8d'/vr '..(ffi.string(imguitable.epiarvr)))
+                sampSendChat('/vr '..u8d(ffi.string(imguitable.epiarvr)))
                 wait(imguitable.wpiarvr[0])
             end
             if imguitable.cpiarrb[0] then
-                sampSendChat(u8d'/rb '..(ffi.string(imguitable.epiarrb)))
+                sampSendChat('/rb '..u8d(ffi.string(imguitable.epiarrb)))
                 wait(imguitable.wpiarrb[0])
             end
             if imguitable.cpiarfb[0] then
-                sampSendChat(u8d'/fb '..(ffi.string(imguitable.epiarfb)))
+                sampSendChat('/fb '..u8d(ffi.string(imguitable.epiarfb)))
                 wait(imguitable.wpiarfb[0])
             end
             if imguitable.cpiarfam[0] then
-                sampSendChat(u8d'/fam '..(ffi.string(imguitable.epiarfam)))
+                sampSendChat('/fam '..u8d(ffi.string(imguitable.epiarfam)))
                 wait(imguitable.wpiarfam[0])
             end
         end
@@ -954,7 +954,7 @@ imgui.OnFrame(
                                                     lua_thread.create(function ()
                                                         if bindsendtype[0] == 1 then
                                                             for l in (ffi.string(inputhotkeytext)):gmatch("[^\r\n]+") do
-                                                                sampSendChat(l)
+                                                                sampSendChat(u8d(l))
                                                                 wait(tonumber(inputhotkeywait[0]))
                                                             end
                                                         elseif bindsendtype[0] == 2 then
@@ -1084,7 +1084,7 @@ imgui.OnFrame(
                                                     lua_thread.create(function ()
                                                         if bindsendtype[0] == 1 then
                                                             for l in (ffi.string(inputhotkeytext)):gmatch("[^\r\n]+") do
-                                                                sampSendChat(l)
+                                                                sampSendChat(u8d(l))
                                                                 wait(tonumber(inputhotkeywait[0]))
                                                             end
                                                         elseif bindsendtype[0] == 2 then
@@ -1133,7 +1133,7 @@ imgui.OnFrame(
                                                     lua_thread.create(function ()
                                                         if bindsendtype[0] == 1 then
                                                             for l in (ffi.string(inputhotkeytext)):gmatch("[^\r\n]+") do
-                                                                sampSendChat(l)
+                                                                sampSendChat(u8d(l))
                                                                 wait(tonumber(inputhotkeywait[0]))
                                                             end
                                                         elseif bindsendtype[0] == 2 then
@@ -2517,7 +2517,7 @@ function LoadBinds()
                                     if tonumber(tabletype) == 1 then
                                         tabletext = tabletext:gsub(';', '\n')
                                         for l in tabletext:gmatch("[^\r\n]+") do
-                                            sampSendChat(l)
+                                            sampSendChat(u8d(l))
                                             wait(tonumber(tablewait))
                                         end
                                     elseif tonumber(tabletype) == 2 then
