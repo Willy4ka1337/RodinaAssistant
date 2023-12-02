@@ -2,7 +2,7 @@
 
 script_name('RodinaHelper')
 script_author('Willy4ka')
-script_version('1.1')
+script_version('1.0')
 script_description('Helper for Rodina Role Play')
 
 local imgui                 = require('mimgui')
@@ -1386,7 +1386,7 @@ imgui.OnFrame(
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+2)
                         imgui.CenterText(('Настройки'))
                         imgui.Separator()
-                        imgui.BeginChild('##autopiarpopup', imgui.ImVec2(-1,250),true)
+                        imgui.BeginChild('##autopiarpopup', imgui.ImVec2(-1,280),true)
                         imgui.SetCursorPosX(10)
                         imgui.SetCursorPosY(imgui.GetCursorPosY()+5)
                         if imgui.CustomCheckbox('##chat', imguitable.cpiarchat) then
@@ -1532,13 +1532,6 @@ imgui.OnFrame(
                             inicfg.save(ini, directIni)
                         end
                         imgui.EndChild()
-                        -- wpiarchat = imgui.new.int(ini.autopiar.chatwait),
-                        -- wpiars = imgui.new.int(ini.autopiar.swait),
-                        -- wpiarc = imgui.new.int(ini.autopiar.cwait),
-                        -- wpiarvr = imgui.new.int(ini.autopiar.vrwait),
-                        -- wpiarrb = imgui.new.int(ini.autopiar.rbwait),
-                        -- wpiarfb = imgui.new.int(ini.autopiar.fbwait),
-                        -- wpiarfam = imgui.new.int(ini.autopiar.famwait),
                         if imgui.Button('Закрыть', imgui.ImVec2(-1, 30)) then
                             imgui.CloseCurrentPopup()
                         end
